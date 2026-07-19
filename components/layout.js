@@ -10,7 +10,7 @@ export default function Layout({ children }) {
   return (
     <>
       <Head>
-        <title>Fauzan Husain</title>
+        <title>Startup</title>
       </Head>
       <main className={`${poppins.className}`}>{children}</main>
     </>
