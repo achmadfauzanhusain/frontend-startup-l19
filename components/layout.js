@@ -1,5 +1,6 @@
 import { Poppins } from 'next/font/google'
 import Head from 'next/head'
+import Navbar from './navbar'
 
 const poppins = Poppins({ 
   subsets: ['latin'], 
@@ -12,7 +13,10 @@ export default function Layout({ children }) {
       <Head>
         <title>Startup</title>
       </Head>
-      <main className={`${poppins.className}`}>{children}</main>
+      <main className={`${poppins.className}`}>
+        <Navbar />
+        {children}
+      </main>
     </>
   )
 }
