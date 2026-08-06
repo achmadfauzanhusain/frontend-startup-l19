@@ -1,7 +1,9 @@
 const ConnectWallet = () => {
     return (
-        <div className="w-1/3 flex px-6">
-            <h1 className="mt-2">Connect Wallet</h1>
+        <div className="w-full md:w-1/3 flex md:justify-end mt-4 md:mt-0">
+            <h1 className="mt-2 mx-auto">
+                Connect Wallet
+            </h1>
         </div>
     )
 }

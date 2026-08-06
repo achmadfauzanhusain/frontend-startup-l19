@@ -1,8 +1,8 @@
 const MainContent = () => {
     return (
-        <div className="w-2/3 border-r">
-            <h1 className="mt-2">Main Content</h1>
-        </div>
+      <div className="w-full bg-red-300 md:w-2/3 border-0 md:border-r">
+        <h1>Main Content</h1>
+      </div>
     )
 }
 
