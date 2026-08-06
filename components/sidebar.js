@@ -2,7 +2,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 
 const menuItems = [
-  { label: 'Home', icon: '/icon/home.png' },
+  { label: 'Home', icon: '/icon/homepage.png' },
   { label: 'Post', icon: '/icon/add.png' },
   { label: 'Community', icon: '/icon/community.png' },
   { label: 'Wallet', icon: '/icon/wallet.png' },
