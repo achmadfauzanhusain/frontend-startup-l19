@@ -54,7 +54,7 @@ const Sidebar = () => {
             key={item.label}
             className="flex flex-col items-center justify-center text-xs text-gray-600"
           >
-            <Image src={item.icon} alt={item.label} width={24} height={24} />
+            <Image src={item.icon} alt={item.label} width={28} height={28} />
             <p className="opacity-75 text-[10px]">{item.label}</p>
           </button>
         ))}
