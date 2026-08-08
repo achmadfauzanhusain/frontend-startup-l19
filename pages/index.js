@@ -1,3 +1,4 @@
+import ConnectWallet from "@/components/connectWallet";
 import MainContent from "@/components/mainContent";
 
 export default function Home() {
@@ -7,9 +8,7 @@ export default function Home() {
       <MainContent />
 
       {/* connect wallet */}
-      <div className="w-full bg-blue-200 md:w-1/3 hidden md:flex md:justify-center mt-4 md:mt-0">
-        <h1>Connect Wallet</h1>
-      </div>
+      <ConnectWallet />
     </div>
   );
 }

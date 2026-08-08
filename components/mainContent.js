@@ -23,11 +23,12 @@ const MainContent = () => {
             </div>
           </Link>
 
-          <div className="mt-4">
-            <div>
+          <div className="mt-4 flex flex-col gap-6">
+            <div className="border-b border-gray-300 pb-6">
               {/* header */}
-              <div>
+              <div className="flex gap-2 items-center">
                 {/* <Image /> */}
+                <div className="bg-blue-300 rounded-4xl p-4"></div>
 
                 <div className="text-xs">
                   <h2 className="font-semibold">fauzanchenko</h2>
@@ -37,8 +38,22 @@ const MainContent = () => {
               </div>
 
               {/* content */}
-              <div>
+              <div className="mt-2 flex flex-col md:flex-row">
+                <div className="flex justify-between flex-row md:flex-col py-3 md:px-3 gap-6 order-2 md:order-1">
+                  <div className="flex flex-row md:flex-col gap-6">
+                    <button>
+                      <Image src="/icon/like.png" alt="Like" width={20} height={20} />
+                    </button>
+                    <button>
+                      <Image src="/icon/comment.png" alt="Comment" width={20} height={20} />
+                    </button>
+                  </div>
 
+                  <button>
+                    <Image src="/icon/share.png" alt="Share" width={20} height={20} />
+                  </button>
+                </div>
+                <div className="bg-red-200 h-[350px] w-full order-1 md:order-2"></div>
               </div>
             </div>
           </div>
