@@ -2,10 +2,10 @@ import Link from 'next/link'
 import Image from 'next/image'
 
 const menuItems = [
-  { label: 'Home', icon: '/icon/homepage.png' },
-  { label: 'Post', icon: '/icon/add.png' },
-  { label: 'Community', icon: '/icon/community.png' },
-  { label: 'Wallet', icon: '/icon/wallet.png' },
+  { label: 'Home', icon: '/icon/homepage.png', href: '/' },
+  { label: 'Post', icon: '/icon/add.png', href: '/post/create' },
+  { label: 'Community', icon: '/icon/community.png', href: '/community' },
+  { label: 'Wallet', icon: '/icon/wallet.png', href: '/wallet' },
 ]
 
 const Sidebar = () => {
@@ -25,15 +25,15 @@ const Sidebar = () => {
             <Image src="/icon/homepage.png" alt="Home" width={24} height={24} className="inline-block mr-2" />
             Home
           </Link>
-          <Link href="/" className="hover:bg-gray-200/50 py-3 px-3 rounded-sm flex items-center">
+          <Link href="/post/create" className="hover:bg-gray-200/50 py-3 px-3 rounded-sm flex items-center">
             <Image src="/icon/add.png" alt="Create Post" width={24} height={24} className="inline-block mr-2" />
             Create Post
           </Link>
-          <Link href="/" className="hover:bg-gray-200/50 py-3 px-3 rounded-sm flex items-center">
+          <Link href="/community" className="hover:bg-gray-200/50 py-3 px-3 rounded-sm flex items-center">
             <Image src="/icon/community.png" alt="Start Community" width={24} height={24} className="inline-block mr-2" />
             Start Community
           </Link>
-          <Link href="/" className="hover:bg-gray-200/50 py-3 px-3 rounded-sm flex items-center">
+          <Link href="/wallet" className="hover:bg-gray-200/50 py-3 px-3 rounded-sm flex items-center">
             <Image src="/icon/wallet.png" alt="Wallet" width={24} height={24} className="inline-block mr-2" />
             Wallet
           </Link>
@@ -50,13 +50,14 @@ const Sidebar = () => {
         "
       >
         {menuItems.map((item) => (
-          <button
+          <Link
+            href="/"
             key={item.label}
             className="flex flex-col items-center justify-center text-xs text-gray-600"
           >
             <Image src={item.icon} alt={item.label} width={28} height={28} />
             <p className="opacity-75 text-[10px]">{item.label}</p>
-          </button>
+          </Link>
         ))}
       </div>
     </>

@@ -26,7 +26,7 @@ const MainContent = () => {
           <div className="mt-4 flex flex-col gap-6">
             <div className="border-b border-gray-300 pb-6">
               {/* header */}
-              <div className="flex gap-2 items-center">
+              <Link href="/fauzanchenko" className="flex gap-2 items-center">
                 {/* <Image /> */}
                 <div className="bg-blue-300 rounded-4xl p-4"></div>
 
@@ -35,7 +35,7 @@ const MainContent = () => {
                   <p className="opacity-50">2 days ago</p>
                   <p className="mt-1">new artisan keycaps</p>
                 </div>
-              </div>
+              </Link>
 
               {/* content */}
               <div className="mt-2 flex flex-col md:flex-row">
