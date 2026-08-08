@@ -16,15 +16,27 @@ const Sidebar = () => {
           hidden md:block
           fixed top-[73px] left-0 z-40
           w-1/4 h-[calc(100vh-73px)]
-          border-r bg-white px-6
+          border-r bg-white px-1 lg:px-6
           text-sm
         "
       >
         <div className="flex flex-col mt-4">
-          <Link href="/" className="hover:bg-gray-200/50 py-3 px-3 rounded-sm">Home</Link>
-          <Link href="/" className="hover:bg-gray-200/50 py-3 px-3 rounded-sm">Create Post</Link>
-          <Link href="/" className="hover:bg-gray-200/50 py-3 px-3 rounded-sm">Start Community</Link>
-          <Link href="/" className="hover:bg-gray-200/50 py-3 px-3 rounded-sm">Profile</Link>
+          <Link href="/" className="hover:bg-gray-200/50 py-3 px-3 rounded-sm flex items-center">
+            <Image src="/icon/homepage.png" alt="Home" width={24} height={24} className="inline-block mr-2" />
+            Home
+          </Link>
+          <Link href="/" className="hover:bg-gray-200/50 py-3 px-3 rounded-sm flex items-center">
+            <Image src="/icon/add.png" alt="Create Post" width={24} height={24} className="inline-block mr-2" />
+            Create Post
+          </Link>
+          <Link href="/" className="hover:bg-gray-200/50 py-3 px-3 rounded-sm flex items-center">
+            <Image src="/icon/community.png" alt="Start Community" width={24} height={24} className="inline-block mr-2" />
+            Start Community
+          </Link>
+          <Link href="/" className="hover:bg-gray-200/50 py-3 px-3 rounded-sm flex items-center">
+            <Image src="/icon/wallet.png" alt="Wallet" width={24} height={24} className="inline-block mr-2" />
+            Wallet
+          </Link>
         </div>
       </div>
 
