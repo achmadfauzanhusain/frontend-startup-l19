@@ -30,6 +30,7 @@ const MainContent = () => {
                 {/* <Image /> */}
                 <div className="bg-blue-300 rounded-4xl p-4"></div>
 
+                {/* user info */}
                 <div className="text-xs">
                   <h2 className="font-semibold">fauzanchenko</h2>
                   <p className="opacity-50">2 days ago</p>
