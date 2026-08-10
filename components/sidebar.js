@@ -4,8 +4,8 @@ import Image from 'next/image'
 const menuItems = [
   { label: 'Home', icon: '/icon/homepage.png', href: '/' },
   { label: 'Post', icon: '/icon/add.png', href: '/post/create' },
-  { label: 'Community', icon: '/icon/community.png', href: '/community' },
-  { label: 'Wallet', icon: '/icon/wallet.png', href: '/wallet' },
+  { label: 'Server', icon: '/icon/community.png', href: '/server' },
+  { label: 'Wallet', icon: '/icon/wallet.png', href: `/wallet` },
 ]
 
 const Sidebar = () => {
@@ -29,9 +29,9 @@ const Sidebar = () => {
             <Image src="/icon/add.png" alt="Create Post" width={24} height={24} className="inline-block mr-2" />
             Create Post
           </Link>
-          <Link href="/community" className="hover:bg-gray-200/50 py-3 px-3 rounded-sm flex items-center">
-            <Image src="/icon/community.png" alt="Start Community" width={24} height={24} className="inline-block mr-2" />
-            Start Community
+          <Link href="/server" className="hover:bg-gray-200/50 py-3 px-3 rounded-sm flex items-center">
+            <Image src="/icon/community.png" alt="Start Server" width={24} height={24} className="inline-block mr-2" />
+            Your Server
           </Link>
           <Link href="/wallet" className="hover:bg-gray-200/50 py-3 px-3 rounded-sm flex items-center">
             <Image src="/icon/wallet.png" alt="Wallet" width={24} height={24} className="inline-block mr-2" />
