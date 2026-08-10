@@ -42,15 +42,18 @@ const MainContent = () => {
               <div className="mt-2 flex flex-col md:flex-row">
                 <div className="flex justify-between flex-row md:flex-col py-3 md:px-3 gap-6 order-2 md:order-1">
                   <div className="flex flex-row md:flex-col gap-6">
-                    <button>
+                    <button className="cursor-pointer">
                       <Image src="/icon/like.png" alt="Like" width={20} height={20} />
                     </button>
-                    <button>
+                    <button className="cursor-pointer">
                       <Image src="/icon/comment.png" alt="Comment" width={20} height={20} />
                     </button>
+                    <Link href={`/reward/123`} className="cursor-pointer">
+                      <Image src="/icon/reward.png" alt="Reward This Post" width={25} height={25} />
+                    </Link>
                   </div>
 
-                  <button>
+                  <button className="cursor-pointer">
                     <Image src="/icon/share.png" alt="Share" width={20} height={20} />
                   </button>
                 </div>
