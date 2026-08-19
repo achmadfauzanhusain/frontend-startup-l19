@@ -13,34 +13,32 @@ const Notifications = () => {
                         <h1 className="text-lg font-semibold">Notifications</h1>
                     </div>
                     <hr className="border-gray-300 mt-4" />
-                    
-                    <div className="mt-4 flex flex-col gap-2">
-                        <Link href="/fauzanchenko" className="flex gap-2 items-center border border-gray-300 py-1 px-4">
+
+                    <div className="mt-4 flex flex-col gap-3">
+                        <Link href="/fauzanchenko" className="flex gap-2 items-center py-1 px-2">
                             {/* <Image /> */}
                             <div className="bg-blue-300 rounded-4xl p-4"></div>
 
                             {/* user info */}
                             <div className="text-xs flex justify-between items-center w-full">
                                 <div>
-                                    <h2 className="font-semibold">fauzanchenko</h2>
+                                        <h2><span className="font-semibold">fauzanchenko</span> liked your post</h2>
                                     <p className="opacity-50">Now</p>
-                                    <p className="mt-1">Liked Your Post</p>
                                 </div>
-                                <div className="w-[38px] h-[38px] bg-blue-300"></div>
+                                <div className="w-[38px] h-[38px] rounded-md bg-blue-300"></div>
                             </div>
                         </Link>
-                        <Link href="/fauzanchenko" className="flex gap-2 items-center border border-gray-300 py-1 px-4">
+                        <Link href="/fauzanchenko" className="flex gap-2 items-center py-1 px-2">
                             {/* <Image /> */}
                             <div className="bg-blue-300 rounded-4xl p-4"></div>
 
                             {/* user info */}
                             <div className="text-xs flex justify-between items-center w-full">
                                 <div>
-                                    <h2 className="font-semibold">fauzanchenko</h2>
+                                        <h2><span className="font-semibold">fauzanchenko</span> liked your post</h2>
                                     <p className="opacity-50">Now</p>
-                                    <p className="mt-1">Liked Your Post</p>
                                 </div>
-                                <div className="w-[38px] h-[38px] bg-blue-300"></div>
+                                <div className="w-[38px] h-[38px] rounded-md bg-blue-300"></div>
                             </div>
                         </Link>
                     </div>
