@@ -18,14 +18,14 @@ const Server = () => {
                             <div className="p-4 rounded-4xl bg-blue-300"></div>
                             <div>
                                 <h1 className="text-sm">mechKeyboard</h1>
-                                <p className="text-xs text-gray-500">2700 member</p>
+                                <p className="text-xs text-gray-500">2700 <span className="text-black font-semibold">member</span></p>
                             </div>
                         </Link>
                         <Link href="/server/artisankeycaps" className="border border-gray-300 py-4 px-3 rounded-md flex gap-2 items-center">
                             <div className="p-4 rounded-4xl bg-blue-300"></div>
                             <div>
                                 <h1 className="text-sm">artisanKeycaps</h1>
-                                <p className="text-xs text-gray-500">400 member</p>
+                                <p className="text-xs text-gray-500">400 <span className="text-black font-semibold">member</span></p>
                             </div>
                         </Link>
                     </div>

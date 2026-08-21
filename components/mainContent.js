@@ -57,7 +57,7 @@ const MainContent = () => {
                     <Image src="/icon/share.png" alt="Share" width={20} height={20} />
                   </button>
                 </div>
-                <div className="bg-red-200 h-[375px] w-[375px] order-1 md:order-2"></div>
+                <div className="bg-red-200 w-full h-[280px] sm:h-[375px] md:h-[300px] lg:h-[375px] md:w-[300px] lg:w-[375px] order-1 md:order-2"></div>
               </div>
             </div>
           </div>
