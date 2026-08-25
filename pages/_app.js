@@ -2,6 +2,9 @@ import '@/styles/globals.css'
 import Layout from '@/components/layout'
 import Head from 'next/head'
 
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 import '@rainbow-me/rainbowkit/styles.css';
 import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
 import { WagmiProvider } from 'wagmi';
@@ -21,6 +24,7 @@ export default function App({ Component, pageProps }) {
         <RainbowKitProvider>
           <Layout>
             <Component {...pageProps} />
+            <ToastContainer />
           </Layout>
         </RainbowKitProvider>
       </QueryClientProvider>

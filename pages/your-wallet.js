@@ -1,15 +1,28 @@
 import Link from "next/link"
+import { useAccount } from 'wagmi';
+import { toast } from "react-toastify";
 
 import ConnectWallet from "@/components/connectWallet"
+import { setRegister } from "@/services/auth";
 
 const Wallet = () => {
+    const { address, isDisconnected } = useAccount();
+
+    const handleRegister = async() => {
+        const response = await setRegister({ address })
+        if(response.error) {
+            toast.error(response.message)
+        } else {
+            toast.success("success registering ur address!")
+        }
+    }
     return (
         <div className="flex flex-col gap-2 md:flex-row pb-12">
             <div className="w-full md:w-2/3 border-0 md:border-r px-2">
                 <div className="mt-4 md:mt-8">
                     <div className="bg-blue-300 rounded-3xl w-[34px] h-[34px]"></div>
                     <hr className="border-gray-300 mt-4" />
-                    <div className="grid grid-cols-2 items-center justify-start gap-2 md:gap-4 mt-4">
+                    <div className="grid grid-cols-2 justify-start gap-2 md:gap-4 mt-4">
                         <div className="flex flex-col gap-2 text-xs sm:text-sm">
                             <div className="flex items-center justify-between">
                                 <p>Display Name</p>
@@ -22,14 +35,19 @@ const Wallet = () => {
                             </div>
                         </div>
                         <div className="flex flex-col gap-2 text-xs sm:text-sm text-gray-500">
-                            <p>fauzanchenko</p>
-                            <p>0x1234567890abcdef</p>
+                            <p>-</p>
+                            <p className="break-all">{address}</p>
                         </div>
                     </div>
                     <hr className="border-gray-300 mt-4" />
 
                     <div className="mt-4">
-                        <h2 className="text-xs sm:text-sm"><span className="bg-green-400 text-white p-1 rounded-sm">Connect Wallet</span> - <span className="bg-red-400 text-white p-1 rounded-sm">Register</span> - <span className="bg-red-400 text-white p-1 rounded-sm">Create Proof</span> - <span className="bg-red-400 text-white p-1 rounded-sm">Login</span></h2>
+                        <h2 className="text-xs sm:text-sm">
+                            {isDisconnected ? <span className="bg-red-400 text-white p-1 rounded-sm">Connect Wallet</span> : <span className="bg-green-400 text-white p-1 rounded-sm">Connect Wallet</span>} -
+                            <span className="bg-red-400 text-white p-1 rounded-sm">Register</span> - 
+                            <span className="bg-red-400 text-white p-1 rounded-sm">Create Proof</span> - 
+                            <span className="bg-red-400 text-white p-1 rounded-sm">Login</span>
+                        </h2>
                     </div>
                     <hr className="border-gray-300 mt-4" />
 
@@ -48,7 +66,7 @@ const Wallet = () => {
                     
                     {/* register */}
                     <div className="mt-4">
-                        <button className="bg-[#4272FC] cursor-pointer text-sm text-white py-2 px-2 rounded-md hover:bg-[#3a68e6]">
+                        <button onClick={handleRegister} className="bg-[#4272FC] cursor-pointer text-sm text-white py-2 px-2 rounded-md hover:bg-[#3a68e6]">
                             Register with Your Wallet
                         </button>
                         <p className="text-green-500 mt-1 font-semibold text-sm">registered successfully!</p>
