@@ -4,16 +4,21 @@ import { toast } from "react-toastify";
 
 import ConnectWallet from "@/components/connectWallet"
 import { setRegister } from "@/services/auth";
+import { useState } from "react";
 
 const Wallet = () => {
     const { address, isDisconnected } = useAccount();
+    const [alreadyRegister, setAlreadyRegister] = useState(false)
 
     const handleRegister = async() => {
         const response = await setRegister({ address })
+        console.log(response)
         if(response.error) {
             toast.error(response.message)
+            setAlreadyRegister(true)
         } else {
             toast.success("success registering ur address!")
+            setAlreadyRegister(true)
         }
     }
     return (
@@ -44,7 +49,7 @@ const Wallet = () => {
                     <div className="mt-4">
                         <h2 className="text-xs sm:text-sm">
                             {isDisconnected ? <span className="bg-red-400 text-white p-1 rounded-sm">Connect Wallet</span> : <span className="bg-green-400 text-white p-1 rounded-sm">Connect Wallet</span>} -
-                            <span className="bg-red-400 text-white p-1 rounded-sm">Register</span> - 
+                            {alreadyRegister ? <span className="bg-green-400 text-white p-1 rounded-sm">Register</span> : <span className="bg-red-400 text-white p-1 rounded-sm">Register</span>} - 
                             <span className="bg-red-400 text-white p-1 rounded-sm">Create Proof</span> - 
                             <span className="bg-red-400 text-white p-1 rounded-sm">Login</span>
                         </h2>
@@ -69,7 +74,7 @@ const Wallet = () => {
                         <button onClick={handleRegister} className="bg-[#4272FC] cursor-pointer text-sm text-white py-2 px-2 rounded-md hover:bg-[#3a68e6]">
                             Register with Your Wallet
                         </button>
-                        <p className="text-green-500 mt-1 font-semibold text-sm">registered successfully!</p>
+                        {alreadyRegister ? <p className="text-green-500 mt-1 font-semibold text-sm">registered successfully!</p> : <p></p>}
                     </div>
                     <hr className="border-gray-300 mt-4" />
 
