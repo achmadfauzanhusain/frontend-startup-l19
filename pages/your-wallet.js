@@ -5,10 +5,14 @@ import { toast } from "react-toastify";
 import ConnectWallet from "@/components/connectWallet"
 import { setRegister } from "@/services/auth";
 import { useState } from "react";
+import { generateProof } from "@/lib/zk/generateProof";
 
 const Wallet = () => {
     const { address, isDisconnected } = useAccount();
     const [alreadyRegister, setAlreadyRegister] = useState(false)
+
+    const [proof, setProof] = useState(null)
+    const [publicSignals, setPublicSignals] = useState(null)
 
     const handleRegister = async() => {
         const response = await setRegister({ address })
@@ -20,6 +24,29 @@ const Wallet = () => {
             toast.success("success registering ur address!")
             setAlreadyRegister(true)
         }
+    }
+
+    const handleGenerateProof = async() => {
+        try {
+            if(!address) {
+                toast.error("u must register before generating the proof!")
+            }
+            const { proof, publicSignals } = await generateProof(address)
+
+            setProof(proof)
+            setPublicSignals(publicSignals)
+            console.log({ proof, publicSignals })
+
+            setAlreadyRegister(true)
+
+            toast.success("Success generating proof!")
+        } catch (error) {
+            toast.error(error.message)
+        }
+    }
+
+    const handleLogin = async() => {
+        const data = { proof, publicSignals }
     }
     return (
         <div className="flex flex-col gap-2 md:flex-row pb-12">
@@ -80,16 +107,16 @@ const Wallet = () => {
 
                     {/* create proof */}
                     <div className="mt-4">
-                        <button className="bg-[#4272FC] cursor-pointer text-sm text-white py-2 px-2 rounded-md hover:bg-[#3a68e6]">
+                        <button onClick={handleGenerateProof} className="bg-[#4272FC] cursor-pointer text-sm text-white py-2 px-2 rounded-md hover:bg-[#3a68e6]">
                             Generate Proof
                         </button>
 
                         <div className="mt-2 w-full py-2 px-3 rounded-md text-sm md:text-base">
                             <p className="text-xs md:text-sm font-semibold">Proof:</p>
-                            <pre className="bg-gray-100 text-xs md:text-sm p-4 overflow-auto">lorem ipsum dolor sit amet</pre>
-
-                            <p className="text-xs mt-4 md:text-sm font-semibold">Public Signals:</p>
-                            <pre className="bg-gray-100 text-xs md:text-sm p-4 overflow-auto">lorem ipsum dolor sit amet</pre>
+                            <pre className="bg-gray-100 text-xs md:text-sm p-4 overflow-auto">{JSON.stringify(proof ? proof : "ur not generating yet")}</pre>
+                
+                            <p className="text-xs md:text-sm font-semibold mt-2">Public Signals:</p>
+                            <pre className="bg-gray-100 text-xs md:text-sm p-4 overflow-auto">{JSON.stringify(publicSignals ? publicSignals : "ur not generating yet")}</pre>
                         </div>
                     </div>
                     <hr className="border-gray-300 mt-4" />
