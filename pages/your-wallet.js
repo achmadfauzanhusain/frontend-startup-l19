@@ -6,12 +6,13 @@ import Cookies from "js-cookie";
 
 import ConnectWallet from "@/components/connectWallet"
 import { setRegister, setLogin } from "@/services/auth";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { generateProof } from "@/lib/zk/generateProof";
 
 const Wallet = () => {
     const { address, isDisconnected } = useAccount();
     const [alreadyRegister, setAlreadyRegister] = useState(false)
+    const [alreadyGenerateProof, setAlreadyGenerateProof] = useState(false)
     const [alreadyLogin, setAlreadyLogin] = useState(false)
 
     const [proof, setProof] = useState(null)
@@ -19,7 +20,6 @@ const Wallet = () => {
 
     const handleRegister = async() => {
         const response = await setRegister({ address })
-        console.log(response)
         if(response.error) {
             toast.error(response.message)
             setAlreadyRegister(true)
@@ -28,7 +28,6 @@ const Wallet = () => {
             setAlreadyRegister(true)
         }
     }
-
     const handleGenerateProof = async() => {
         try {
             if(!address) {
@@ -40,14 +39,17 @@ const Wallet = () => {
             setPublicSignals(publicSignals)
 
             setAlreadyRegister(true)
+            setAlreadyGenerateProof(true)
             toast.success("Success generating proof!")
         } catch (error) {
             toast.error(error.message)
         }
     }
-
     const handleLogin = async() => {
         const data = { proof, publicSignals }
+        if(!proof && !publicSignals) {
+            toast.error("u must generating proof before login!")
+        }
 
         const response = await setLogin(data)
         if(response.error) {
@@ -60,6 +62,20 @@ const Wallet = () => {
             toast.success("login success!")
         }
     }
+
+    const checkToken = async() => {
+        const token = await Cookies.get("token")
+        const tokenFromBase64 = atob(token)
+        if(tokenFromBase64) {
+            setAlreadyRegister(true)
+            setAlreadyGenerateProof(true)
+            setAlreadyLogin(true)
+        }
+    }
+
+    useEffect(() => {
+        checkToken()
+    }, [])
     return (
         <div className="flex flex-col gap-2 md:flex-row pb-12">
             <div className="w-full md:w-2/3 border-0 md:border-r px-2">
@@ -89,8 +105,8 @@ const Wallet = () => {
                         <h2 className="text-xs sm:text-sm">
                             {isDisconnected ? <span className="bg-red-400 text-white p-1 rounded-sm">Connect Wallet</span> : <span className="bg-green-400 text-white p-1 rounded-sm">Connect Wallet</span>} -
                             {alreadyRegister ? <span className="bg-green-400 text-white p-1 rounded-sm">Register</span> : <span className="bg-red-400 text-white p-1 rounded-sm">Register</span>} - 
-                            <span className="bg-red-400 text-white p-1 rounded-sm">Create Proof</span> - 
-                            <span className="bg-red-400 text-white p-1 rounded-sm">Login</span>
+                            {alreadyGenerateProof ? <span className="bg-green-400 text-white p-1 rounded-sm">Create Proof</span> : <span className="bg-red-400 text-white p-1 rounded-sm">Create Proof</span>} - 
+                            {alreadyLogin ? <span className="bg-green-400 text-white p-1 rounded-sm">Login</span> : <span className="bg-red-400 text-white p-1 rounded-sm">Login</span>}
                         </h2>
                     </div>
                     <hr className="border-gray-300 mt-4" />
