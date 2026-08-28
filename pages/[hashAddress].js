@@ -77,10 +77,16 @@ const Wallet = () => {
             setAlreadyLogin(true)
         }
     }
+    const removeTokenWhenDisconnected = async() => {
+        if(isDisconnected) {
+            Cookies.remove("token")
+        }
+    }
 
     useEffect(() => {
         checkToken()
-    }, [])
+        removeTokenWhenDisconnected()
+    }, [isDisconnected])
     return (
         <div className="flex flex-col gap-2 md:flex-row pb-12">
             <div className="w-full md:w-2/3 border-0 md:border-r px-2">
