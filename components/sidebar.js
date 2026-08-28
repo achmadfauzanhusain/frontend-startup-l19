@@ -1,15 +1,33 @@
 import Link from 'next/link'
 import Image from 'next/image'
-
-const menuItems = [
-  { label: 'Home', icon: '/icon/homepage.png', href: '/' },
-  { label: 'Post', icon: '/icon/add.png', href: '/post/create' },
-  { label: 'Server', icon: '/icon/community.png', href: '/server' },
-  { label: 'Notifications', icon: '/icon/notifications.png', href: '/notifications' },
-  { label: 'Wallet', icon: '/icon/wallet.png', href: `/your-wallet` },
-]
+import Cookies from 'js-cookie';
+import { jwtDecode } from 'jwt-decode';
+import { useEffect, useState } from 'react';
 
 const Sidebar = () => {
+  const [hashAddress, setHashAddress] = useState("")
+
+  const checkToken = async() => {
+    const token = await Cookies.get("token")
+    if(token) {
+      const jwtToken = atob(token)
+      const payload = jwtDecode(jwtToken)
+      const hashFromPayload = payload.hash
+      setHashAddress(hashFromPayload)
+    }
+  }
+
+  const menuItems = [
+    { label: 'Home', icon: '/icon/homepage.png', href: '/' },
+    { label: 'Post', icon: '/icon/add.png', href: '/post/create' },
+    { label: 'Server', icon: '/icon/community.png', href: '/server' },
+    { label: 'Notifications', icon: '/icon/notifications.png', href: '/notifications' },
+    { label: 'Wallet', icon: '/icon/wallet.png', href: `/${hashAddress}` },
+  ]
+
+  useEffect(() => {
+    checkToken()
+  }, [])
   return (
     <>
       <div
@@ -38,7 +56,7 @@ const Sidebar = () => {
             <Image src="/icon/notifications.png" alt="Notifications" width={24} height={24} className="inline-block mr-2" />
             Notifications
           </Link>
-          <Link href="/your-wallet" className="hover:bg-gray-200/50 py-3 px-3 rounded-sm flex items-center">
+          <Link href={`/${hashAddress}`} className="hover:bg-gray-200/50 py-3 px-3 rounded-sm flex items-center">
             <Image src="/icon/wallet.png" alt="Wallet" width={24} height={24} className="inline-block mr-2" />
             Wallet
           </Link>
