@@ -2,14 +2,17 @@ import Link from "next/link"
 import { useAccount } from 'wagmi';
 import { toast } from "react-toastify";
 
+import Cookies from "js-cookie";
+
 import ConnectWallet from "@/components/connectWallet"
-import { setRegister } from "@/services/auth";
+import { setRegister, setLogin } from "@/services/auth";
 import { useState } from "react";
 import { generateProof } from "@/lib/zk/generateProof";
 
 const Wallet = () => {
     const { address, isDisconnected } = useAccount();
     const [alreadyRegister, setAlreadyRegister] = useState(false)
+    const [alreadyLogin, setAlreadyLogin] = useState(false)
 
     const [proof, setProof] = useState(null)
     const [publicSignals, setPublicSignals] = useState(null)
@@ -35,10 +38,8 @@ const Wallet = () => {
 
             setProof(proof)
             setPublicSignals(publicSignals)
-            console.log({ proof, publicSignals })
 
             setAlreadyRegister(true)
-
             toast.success("Success generating proof!")
         } catch (error) {
             toast.error(error.message)
@@ -47,6 +48,17 @@ const Wallet = () => {
 
     const handleLogin = async() => {
         const data = { proof, publicSignals }
+
+        const response = await setLogin(data)
+        if(response.error) {
+            toast.error(response.error)
+        } else {
+            const token = response.data.data
+            const tokenBase64 = btoa(token)
+            Cookies.set("token", tokenBase64, { expires: 7 })
+            setAlreadyLogin(true)
+            toast.success("login success!")
+        }
     }
     return (
         <div className="flex flex-col gap-2 md:flex-row pb-12">
@@ -123,10 +135,10 @@ const Wallet = () => {
 
                     {/* login */}
                     <div className="mt-4">
-                        <button className="bg-[#4272FC] cursor-pointer text-sm text-white py-2 px-2 rounded-md hover:bg-[#3a68e6]">
+                        <button onClick={handleLogin} className="bg-[#4272FC] cursor-pointer text-sm text-white py-2 px-2 rounded-md hover:bg-[#3a68e6]">
                             Login With Proof
                         </button>
-                        <p className="text-green-500 mt-1 font-semibold text-sm">login successfully!</p>
+                        {alreadyLogin ? <p className="text-green-500 mt-1 font-semibold text-sm">login successfully!</p> : <p></p>}
                     </div>
                 </div>
             </div>
