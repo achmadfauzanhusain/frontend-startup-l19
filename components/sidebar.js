@@ -20,9 +20,9 @@ const Sidebar = () => {
   const menuItems = [
     { label: 'Home', icon: '/icon/homepage.png', href: '/' },
     { label: 'Post', icon: '/icon/add.png', href: '/post/create' },
-    { label: 'Server', icon: '/icon/community.png', href: '/server' },
+    { label: 'Login', icon: '/icon/login.png', href: `/login` },
     { label: 'Notifications', icon: '/icon/notifications.png', href: '/notifications' },
-    { label: 'Wallet', icon: '/icon/wallet.png', href: `/${hashAddress}` },
+    { label: 'Wallet', icon: '/icon/wallet.png', href: `/${hashAddress ? hashAddress : 'login'}` },
   ]
 
   useEffect(() => {
@@ -56,7 +56,11 @@ const Sidebar = () => {
             <Image src="/icon/notifications.png" alt="Notifications" width={24} height={24} className="inline-block mr-2" />
             Notifications
           </Link>
-          <Link href={`/${hashAddress}`} className="hover:bg-gray-200/50 py-3 px-3 rounded-sm flex items-center">
+          <Link href="/login" className="hover:bg-gray-200/50 py-3 px-3 rounded-sm flex items-center">
+            <Image src="/icon/login.png" alt="Login" width={24} height={24} className="inline-block mr-2" />
+            Login
+          </Link>
+          <Link href={`/${hashAddress ? hashAddress : 'login'}`} className="hover:bg-gray-200/50 py-3 px-3 rounded-sm flex items-center">
             <Image src="/icon/wallet.png" alt="Wallet" width={24} height={24} className="inline-block mr-2" />
             Wallet
           </Link>
