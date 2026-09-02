@@ -99,17 +99,11 @@ const Login = () => {
                     <div className="grid grid-cols-2 justify-start gap-2 md:gap-4 mt-4">
                         <div className="flex flex-col gap-2 text-xs sm:text-sm">
                             <div className="flex items-center justify-between">
-                                <p>Display Name</p>
-                                <p>:</p>
-                            </div>
-                            
-                            <div className="flex items-center justify-between">
                                 <p>Wallet Address</p>
                                 <p>:</p>
                             </div>
                         </div>
                         <div className="flex flex-col gap-2 text-xs sm:text-sm text-gray-500">
-                            <p>-</p>
                             <p className="break-all">{address}</p>
                         </div>
                     </div>

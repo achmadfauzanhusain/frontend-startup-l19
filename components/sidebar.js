@@ -83,7 +83,6 @@ const Sidebar = () => {
             className="flex flex-col items-center justify-center text-xs text-gray-600"
           >
             <Image src={item.icon} alt={item.label} width={24} height={24} />
-            <p className="opacity-75 text-[9px]">{item.label}</p>
           </Link>
         ))}
       </div>

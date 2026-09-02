@@ -62,11 +62,27 @@ const Wallet = () => {
                         <Link href="https://fauzanhusain.com" className="text-xs md:text-sm text-blue-500 hover:text-blue-700">
                             portfolio
                         </Link>
+
+                        <Link href="https://fauzanhusain.com" className="text-xs md:text-sm text-blue-500 hover:text-blue-700">
+                            bitcoin
+                        </Link>
                     </div>
                 </div>
                 <hr className="mt-4 text-gray-300" />
 
+                <div className="mt-2">
+                    <div className="grid grid-cols-3 gap-1 md:gap-2">
+                        <div className="w-full aspect-square bg-blue-100">
 
+                        </div>
+                        <div className="w-full aspect-square bg-blue-100">
+
+                        </div>
+                        <div className="w-full aspect-square bg-blue-100">
+
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <ConnectWallet />
