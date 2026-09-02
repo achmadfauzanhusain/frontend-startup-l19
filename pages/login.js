@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 import { jwtDecode } from "jwt-decode";
 import { useRouter } from "next/router";
 import Cookies from "js-cookie";
-
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 import ConnectWallet from "@/components/connectWallet"
 import { setRegister, setLogin } from "@/services/auth";
 import { useState, useEffect } from "react";
@@ -129,6 +129,12 @@ const Login = () => {
                         <Link href="https://chain.link/education/zero-knowledge-proof-zkp" className="text-sm mt-2 opacity-75 text-blue-500 hover:underline">
                             More Explain
                         </Link>
+                    </div>
+                    <hr className="border-gray-300 mt-4" />
+                    
+                    <div className="mt-4">
+                        <ConnectButton accountStatus="address" showBalance="false" />
+                        {isDisconnected ? <p></p> : <p className="text-green-500 mt-1 font-semibold text-sm">connected!</p>}
                     </div>
                     <hr className="border-gray-300 mt-4" />
                     
