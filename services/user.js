@@ -17,3 +17,13 @@ export async function getPersonalPosts() {
         method: "GET",
     })
 }
+
+export async function createPost(data) {
+    const url = `${ROOT_API}/post/create`
+    return callApi({
+        url,
+        method: "POST",
+        data,
+        token: true
+    })
+}
