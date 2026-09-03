@@ -73,7 +73,6 @@ const Login = () => {
             const jwtToken = atob(token)
             const payload = jwtDecode(jwtToken)
             const hashFromPayload = payload.hash
-            console.log(hashFromPayload)
 
             setAlreadyRegister(true)
             setAlreadyGenerateProof(true)
