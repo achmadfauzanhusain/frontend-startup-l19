@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/router";
 
 import ConnectWallet from "@/components/connectWallet";
@@ -70,16 +71,41 @@ const Wallet = () => {
                 </div>
                 <hr className="mt-4 text-gray-300" />
 
-                <div className="mt-2">
-                    <div className="grid grid-cols-3 gap-1 md:gap-2">
-                        <div className="w-full aspect-square bg-blue-100">
+                <div className="mt-4 flex flex-col gap-6">
+                    <div className="border-b border-gray-300 pb-6">
+                        {/* header */}
+                        <Link href="/fauzanchenko" className="flex gap-2 items-center">
+                            {/* <Image /> */}
+                            <div className="bg-blue-300 rounded-4xl p-4"></div>
 
-                        </div>
-                        <div className="w-full aspect-square bg-blue-100">
+                            {/* user info */}
+                            <div className="text-xs">
+                            <h2 className="font-semibold">fauzanchenko</h2>
+                            <p className="opacity-50">2 days ago</p>
+                            <p className="mt-1">new artisan keycaps</p>
+                            </div>
+                        </Link>
 
-                        </div>
-                        <div className="w-full aspect-square bg-blue-100">
+                        {/* content */}
+                        <div className="mt-2 flex flex-col md:flex-row">
+                            <div className="flex justify-between flex-row md:flex-col py-3 md:px-3 gap-6 order-2 md:order-1">
+                            <div className="flex flex-row md:flex-col gap-6">
+                                <button className="cursor-pointer">
+                                <Image src="/icon/like.png" alt="Like" width={20} height={20} />
+                                </button>
+                                <button className="cursor-pointer">
+                                <Image src="/icon/comment.png" alt="Comment" width={20} height={20} />
+                                </button>
+                                <Link href={`/reward/123`} className="cursor-pointer">
+                                <Image src="/icon/reward.png" alt="Reward This Post" width={25} height={25} />
+                                </Link>
+                            </div>
 
+                            <button className="cursor-pointer">
+                                <Image src="/icon/share.png" alt="Share" width={20} height={20} />
+                            </button>
+                            </div>
+                            <div className="bg-red-200 w-full h-[280px] sm:h-[375px] md:h-[300px] lg:h-[375px] md:w-[300px] lg:w-[375px] order-1 md:order-2"></div>
                         </div>
                     </div>
                 </div>
