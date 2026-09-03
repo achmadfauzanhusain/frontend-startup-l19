@@ -9,3 +9,11 @@ export async function getAllPosts() {
         method: "GET",
     })
 }
+
+export async function getPersonalPosts() {
+    const url = `${ROOT_API}/post/personal`
+    return callApi({
+        url,
+        method: "GET",
+    })
+}
