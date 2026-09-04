@@ -23,7 +23,6 @@ const Wallet = () => {
             toast.error("Failed to fetch posts")
         } else {
             setPosts(response.data)
-            console.log(posts)
         }
     }
 
@@ -53,7 +52,6 @@ const Wallet = () => {
             minute: "2-digit",
         });
     }
-
     return (
         <div className="flex flex-col gap-2 md:flex-row pb-12">
             <div className="w-full md:w-2/3 border-0 md:border-r border-gray-200 px-4 md:px-6">
@@ -113,7 +111,7 @@ const Wallet = () => {
                 <hr className="mt-4 text-gray-300" />
 
                 <div className="mt-4 flex flex-col gap-6">
-                    {posts.map((post) => {
+                    {posts?.map((post) => {
                         return (
                             <div key={post.id} className="border-b border-gray-300 pb-6">
                                 {/* header */}

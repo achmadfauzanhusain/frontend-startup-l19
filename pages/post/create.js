@@ -1,11 +1,14 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import Cookies from "js-cookie";
+import { jwtDecode } from "jwt-decode";
 import { createPost } from "@/services/post";
 import ConnectWallet from "@/components/connectWallet";
 import { toast } from "react-toastify";
 
 const CreatePost = () => {
+    const [account, setAccount] = useState("")
     const [caption, setCaption] = useState("");
 
     const handleCreatePost = async() => {
@@ -23,6 +26,27 @@ const CreatePost = () => {
         }
       }
     }
+
+    const checkToken = async() => {
+        const token = await Cookies.get("token")
+        if(token) {
+            const jwtToken = atob(token)
+            const payload = jwtDecode(jwtToken)
+            const hashFromPayload = payload
+            
+            setAccount(hashFromPayload)
+        }
+    }
+
+    const truncateAddress = (address, start = 6, end = 12) => {
+        if (!address) return "";
+        if (address.length <= start + end) return address;
+        return `${address.slice(0, start)}...${address.slice(-end)}`;
+    }
+
+    useEffect(() => {
+      checkToken()
+    }, [])
     return (
     <div className="flex flex-col gap-2 md:flex-row">
       {/* post create */}
@@ -53,9 +77,9 @@ const CreatePost = () => {
 
                 {/* user info */}
                 <div className="text-xs">
-                  <h2 className="font-semibold">fauzanchenko</h2>
+                  <h2 className="font-semibold">{account.displayName ? account.displayName : truncateAddress(account.hash)}</h2>
                   <p className="opacity-50">Now</p>
-                  <p className="mt-1">-</p>
+                  <p className="mt-1">{caption}</p>
                 </div>
             </Link>
 
