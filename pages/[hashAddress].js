@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { getPersonalPosts } from "@/services/user";
+import { getPersonalPosts } from "@/services/post";
 import ConnectWallet from "@/components/connectWallet";
 
 const Wallet = () => {

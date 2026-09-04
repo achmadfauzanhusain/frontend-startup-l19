@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { createPost } from "@/services/user";
+import { createPost } from "@/services/post";
 import ConnectWallet from "@/components/connectWallet";
 import { toast } from "react-toastify";
 
