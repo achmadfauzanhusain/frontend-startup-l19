@@ -33,6 +33,27 @@ const Wallet = () => {
         }
     }, [hashAddress])
 
+    const formatTimestamp = (timestamp) => {
+        if (!timestamp) return "-";
+
+        let date;
+        if (typeof timestamp === "string" || typeof timestamp === "number") {
+            date = new Date(timestamp);
+        } else if (timestamp.seconds) {
+            date = new Date(timestamp.seconds * 1000);
+        } else {
+            return "-";
+        }
+
+        return date.toLocaleString("id-ID", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+        });
+    }
+
     return (
         <div className="flex flex-col gap-2 md:flex-row pb-12">
             <div className="w-full md:w-2/3 border-0 md:border-r border-gray-200 px-4 md:px-6">
@@ -103,7 +124,7 @@ const Wallet = () => {
                                     {/* user info */}
                                     <div className="text-xs">
                                         <h2 className="font-semibold">{post.displayName ? post.displayName : truncateAddress(post.user)}</h2>
-                                        <p className="opacity-50">2 days ago</p>
+                                        <p className="opacity-50">{post.createdAt ? formatTimestamp(post.createdAt) : "-"}</p>
                                         <p className="mt-1">{post.caption}</p>
                                     </div>
                                 </Link>
