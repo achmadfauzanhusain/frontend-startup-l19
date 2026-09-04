@@ -10,8 +10,8 @@ export async function getAllPosts() {
     })
 }
 
-export async function getPersonalPosts() {
-    const url = `${ROOT_API}/post/personal`
+export async function getPersonalPosts(userId) {
+    const url = `${ROOT_API}/post/${userId}`
     return callApi({
         url,
         method: "GET",
