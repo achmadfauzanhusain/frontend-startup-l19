@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { editProfile } from "@/services/user";
+import { toast } from "react-toastify";
 import { ChevronRight, ImagePlus } from "lucide-react";
 import ConnectWallet from "@/components/connectWallet";
 
@@ -84,6 +86,7 @@ const EditProfile = () => {
     const [profile, setProfile] = useState(initialProfile);
     const [avatar, setAvatar] = useState(null);
     const [editing, setEditing] = useState(null); // key of field being edited, or null
+    const [submitting, setSubmitting] = useState(false);
 
     const fieldMeta = {
         displayName: { label: "Display Name", placeholder: "Add display name" },
@@ -100,6 +103,20 @@ const EditProfile = () => {
 
     const handleSave = (key, val) => {
         setProfile((prev) => ({ ...prev, [key]: val }));
+    };
+
+    const handleEditProfile = async () => {
+        setSubmitting(true);
+        try {
+            const response = await editProfile(profile);
+            console.log(response);
+            toast.success("Profile updated");
+            console.log(response)
+        } catch (error) {
+            toast.error(error?.response?.data?.message || "Failed to update profile");
+        } finally {
+            setSubmitting(false);
+        }
     };
 
     return (
@@ -171,6 +188,18 @@ const EditProfile = () => {
                             />
                         </div>
                     </div>
+                </div>
+
+                {/* Save button */}
+                <div className="max-w-md mx-auto md:mx-0 mt-4">
+                    <button
+                        type="button"
+                        onClick={handleEditProfile}
+                        disabled={submitting}
+                        className="w-full rounded-xl py-2.5 text-sm font-medium bg-blue-500 text-white hover:bg-blue-600 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+                    >
+                        {submitting ? "Saving..." : "Save Profile"}
+                    </button>
                 </div>
 
                 <EditFieldModal
