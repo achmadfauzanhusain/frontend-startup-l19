@@ -5,10 +5,12 @@ import { jwtDecode } from "jwt-decode";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { getPersonalPosts } from "@/services/post";
+import { dataUser } from "@/services/user";
 import ConnectWallet from "@/components/connectWallet";
 
 const Wallet = () => {
     const [address, setAddress] = useState("")
+    const [user, setUser] = useState({})
     const [posts, setPosts] = useState([])
 
     const router = useRouter()
@@ -28,6 +30,14 @@ const Wallet = () => {
             setPosts(response.data)
         }
     }
+    const fetchDataUser = async() => {
+        const response = await dataUser(hashAddress)
+        if(!response) {
+            toast.error("Failed to fetch posts")
+        } else {
+            setUser(response.data)
+        }
+    }
 
     const checkToken = async() => {
         const token = await Cookies.get("token")
@@ -42,6 +52,7 @@ const Wallet = () => {
     useEffect(() => {
         if (hashAddress) {
             fetchPosts()
+            fetchDataUser()
             checkToken()
         }
     }, [hashAddress])
@@ -77,7 +88,7 @@ const Wallet = () => {
                     </div>
 
                     <div className="w-full text-center sm:text-left">
-                        <h2 className="text-base font-semibold md:text-lg">fauzanchenko</h2>
+                        <h2 className="text-base font-semibold md:text-lg">{user?.displayName ? user?.displayName : "-"}</h2>
 
                         <div className="mt-2 inline-flex sm:flex items-center gap-2 bg-gray-100 rounded-full px-3 py-1.5 max-w-full">
                             <svg className="w-3.5 h-3.5 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -89,36 +100,38 @@ const Wallet = () => {
                         </div>
 
                         <div className="mt-4 flex gap-2 justify-center sm:justify-start">
-                            <button
-                                href="/edit-profile"
-                                className="text-xs font-medium py-2 px-6 sm:px-4 sm:w-full rounded-lg bg-blue-500 hover:bg-blue-600 text-white text-center transition-colors"
-                            >
-                                follow
-                            </button>
+                            {address == user?.hash ? (
                             <Link
                                 href="/edit-profile"
                                 className="text-xs font-medium py-2 px-6 sm:px-4 sm:w-full rounded-lg bg-gray-200 hover:bg-gray-300 text-center transition-colors"
                             >
                                 Edit profile
                             </Link>
+                            ) : (
+                            <button
+                                className="text-xs font-medium py-2 px-6 sm:px-4 sm:w-full rounded-lg bg-blue-500 hover:bg-blue-600 text-white text-center transition-colors"
+                            >
+                                follow
+                            </button>
+                            )}
                         </div>
                     </div>
                 </div>
 
                 <div className="mt-4 text-center sm:text-left">
-                    <p className="text-xs md:text-sm text-gray-500">supporting high tech & high testosterone</p>
+                    <p className="text-xs md:text-sm text-gray-500">{user?.bio ? user?.bio : ""}</p>
                     
                     <div className="mt-2 flex gap-2 items-center justify-center sm:justify-start">
-                        <Link href="https://github.com/achmadfauzanhusain" className="text-xs md:text-sm text-blue-500 hover:text-blue-700">
-                            github
+                        <Link href={user?.link1 ? user?.link1 : ""} className="text-xs md:text-sm text-blue-500 hover:text-blue-700">
+                            {user?.nameLink1 ? user?.nameLink1 : ""}
                         </Link>
 
-                        <Link href="https://fauzanhusain.com" className="text-xs md:text-sm text-blue-500 hover:text-blue-700">
-                            portfolio
+                        <Link href={user?.link2 ? user?.link2 : ""} className="text-xs md:text-sm text-blue-500 hover:text-blue-700">
+                            {user?.nameLink2 ? user?.nameLink2 : ""}
                         </Link>
 
-                        <Link href="https://fauzanhusain.com" className="text-xs md:text-sm text-blue-500 hover:text-blue-700">
-                            bitcoin
+                        <Link href={user?.link3 ? user?.link3 : ""} className="text-xs md:text-sm text-blue-500 hover:text-blue-700">
+                            {user?.nameLink3 ? user?.nameLink3 : ""}
                         </Link>
                     </div>
                 </div>
@@ -135,7 +148,7 @@ const Wallet = () => {
 
                                     {/* user info */}
                                     <div className="text-xs">
-                                        <h2 className="font-semibold">{post.displayName ? post.displayName : truncateAddress(post.user)}</h2>
+                                        <h2 className="font-semibold">{truncateAddress(post.user)}</h2>
                                         <p className="opacity-50">{post.createdAt ? formatTimestamp(post.createdAt) : "-"}</p>
                                         <p className="mt-1">{post.caption}</p>
                                     </div>

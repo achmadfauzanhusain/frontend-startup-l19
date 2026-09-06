@@ -1,14 +1,19 @@
-import { useState } from "react";
-import { editProfile } from "@/services/user";
+import { useState, useEffect } from "react";
+import { editProfile, dataUser } from "@/services/user";
 import { toast } from "react-toastify";
 import { ChevronRight, ImagePlus } from "lucide-react";
+import Cookies from "js-cookie";
+import { jwtDecode } from "jwt-decode";
 import ConnectWallet from "@/components/connectWallet";
 
 const initialProfile = {
     displayName: "",
     bio: "",
+    nameLink1: "",
     link1: "",
+    nameLink2: "",
     link2: "",
+    nameLink3: "",
     link3: "",
 };
 
@@ -32,7 +37,7 @@ function ProfileRow({ label, value, placeholder, onClick }) {
     );
 }
 
-function EditFieldModal({ open, label, value, onSave, onClose, multiline }) {
+function EditFieldModal({ open, label, value, placeholder, onSave, onClose, multiline }) {
     const [draft, setDraft] = useState(value);
 
     if (!open) return null;
@@ -46,6 +51,7 @@ function EditFieldModal({ open, label, value, onSave, onClose, multiline }) {
                         autoFocus
                         rows={4}
                         value={draft}
+                        placeholder={placeholder}
                         onChange={(e) => setDraft(e.target.value)}
                         className="w-full resize-none rounded-lg bg-gray-50 border border-gray-200 px-3 py-2 text-sm text-gray-900 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                     />
@@ -54,6 +60,7 @@ function EditFieldModal({ open, label, value, onSave, onClose, multiline }) {
                         autoFocus
                         type="text"
                         value={draft}
+                        placeholder={placeholder}
                         onChange={(e) => setDraft(e.target.value)}
                         className="w-full rounded-lg bg-gray-50 border border-gray-200 px-3 py-2 text-sm text-gray-900 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                     />
@@ -84,17 +91,36 @@ function EditFieldModal({ open, label, value, onSave, onClose, multiline }) {
 
 const EditProfile = () => {
     const [profile, setProfile] = useState(initialProfile);
+    const [originalProfile, setOriginalProfile] = useState(initialProfile); // <-- data asli dari server, buat placeholder
     const [avatar, setAvatar] = useState(null);
     const [editing, setEditing] = useState(null); // key of field being edited, or null
     const [submitting, setSubmitting] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     const fieldMeta = {
-        displayName: { label: "Display Name", placeholder: "Add display name" },
-        bio: { label: "Bio", placeholder: "Add bio", multiline: true },
-        link1: { label: "Link 1", placeholder: "Add link" },
-        link2: { label: "Link 2", placeholder: "Add link" },
-        link3: { label: "Link 3", placeholder: "Add link" },
+        displayName: { label: "Display Name" },
+        bio: { label: "Bio", multiline: true },
+        nameLink1: { label: "Link 1 Name" },
+        link1: { label: "Link 1 URL" },
+        nameLink2: { label: "Link 2 Name" },
+        link2: { label: "Link 2 URL" },
+        nameLink3: { label: "Link 3 Name" },
+        link3: { label: "Link 3 URL" },
     };
+
+    const fallbackPlaceholder = {
+        displayName: "Add display name",
+        bio: "Add bio",
+        nameLink1: "Add link name",
+        link1: "Add link",
+        nameLink2: "Add link name",
+        link2: "Add link",
+        nameLink3: "Add link name",
+        link3: "Add link",
+    };
+
+    // ambil placeholder: prioritas data asli dari server, kalau kosong pakai teks default
+    const getPlaceholder = (key) => originalProfile[key] || fallbackPlaceholder[key];
 
     const handleFileChange = (e) => {
         const file = e.target.files?.[0];
@@ -108,16 +134,50 @@ const EditProfile = () => {
     const handleEditProfile = async () => {
         setSubmitting(true);
         try {
-            const response = await editProfile(profile);
-            console.log(response);
+            // gabungkan data lama + field yang baru diubah, supaya field yang tidak disentuh tidak terkirim kosong
+            const payload = { ...originalProfile, ...profile };
+
+            // hapus field kosong string biar tidak menimpa value lama kalau backend replace penuh
+            Object.keys(payload).forEach((key) => {
+                if (payload[key] === "" && originalProfile[key]) {
+                    payload[key] = originalProfile[key];
+                }
+            });
+
+            const response = await editProfile(payload);
             toast.success("Profile updated");
-            console.log(response)
         } catch (error) {
             toast.error(error?.response?.data?.message || "Failed to update profile");
         } finally {
             setSubmitting(false);
         }
     };
+
+    useEffect(() => {
+        const fetchProfile = async () => {
+            try {
+                const token = Cookies.get("token");
+                if (!token) {
+                    setLoading(false);
+                    return;
+                }
+                const jwtToken = atob(token);
+                const payload = jwtDecode(jwtToken);
+                const hashAddress = payload.hash;
+
+                const response = await dataUser(hashAddress);
+                if (response) {
+                    setOriginalProfile((prev) => ({ ...prev, ...response.data }));
+                    if (response.data.avatar) setAvatar(response.data.avatar);
+                }
+            } catch (err) {
+                toast.error("Failed to load profile");
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchProfile();
+    }, []);
 
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col gap-2 md:flex-row pb-12">
@@ -155,35 +215,64 @@ const EditProfile = () => {
                     <ProfileRow
                         label={fieldMeta.displayName.label}
                         value={profile.displayName}
-                        placeholder={fieldMeta.displayName.placeholder}
+                        placeholder={getPlaceholder("displayName")}
                         onClick={() => setEditing("displayName")}
                     />
                     <ProfileRow
                         label={fieldMeta.bio.label}
                         value={profile.bio}
-                        placeholder={fieldMeta.bio.placeholder}
+                        placeholder={getPlaceholder("bio")}
                         onClick={() => setEditing("bio")}
                     />
 
+                    {/* Link 1 */}
                     <div className="mt-2">
-                        <p className="text-xs font-medium text-blue-500 pt-2 pb-1">Link</p>
+                        <p className="text-xs font-medium text-blue-500 pt-2 pb-1">Link 1</p>
+                        <ProfileRow
+                            label={fieldMeta.nameLink1.label}
+                            value={profile.nameLink1}
+                            placeholder={getPlaceholder("nameLink1")}
+                            onClick={() => setEditing("nameLink1")}
+                        />
                         <ProfileRow
                             label={fieldMeta.link1.label}
                             value={profile.link1}
-                            placeholder={fieldMeta.link1.placeholder}
+                            placeholder={getPlaceholder("link1")}
                             onClick={() => setEditing("link1")}
+                        />
+                    </div>
+
+                    {/* Link 2 */}
+                    <div className="mt-2">
+                        <p className="text-xs font-medium text-blue-500 pt-2 pb-1">Link 2</p>
+                        <ProfileRow
+                            label={fieldMeta.nameLink2.label}
+                            value={profile.nameLink2}
+                            placeholder={getPlaceholder("nameLink2")}
+                            onClick={() => setEditing("nameLink2")}
                         />
                         <ProfileRow
                             label={fieldMeta.link2.label}
                             value={profile.link2}
-                            placeholder={fieldMeta.link2.placeholder}
+                            placeholder={getPlaceholder("link2")}
                             onClick={() => setEditing("link2")}
+                        />
+                    </div>
+
+                    {/* Link 3 */}
+                    <div className="mt-2">
+                        <p className="text-xs font-medium text-blue-500 pt-2 pb-1">Link 3</p>
+                        <ProfileRow
+                            label={fieldMeta.nameLink3.label}
+                            value={profile.nameLink3}
+                            placeholder={getPlaceholder("nameLink3")}
+                            onClick={() => setEditing("nameLink3")}
                         />
                         <div className="[&>button]:border-b-0">
                             <ProfileRow
                                 label={fieldMeta.link3.label}
                                 value={profile.link3}
-                                placeholder={fieldMeta.link3.placeholder}
+                                placeholder={getPlaceholder("link3")}
                                 onClick={() => setEditing("link3")}
                             />
                         </div>
@@ -203,9 +292,11 @@ const EditProfile = () => {
                 </div>
 
                 <EditFieldModal
+                    key={editing}
                     open={editing !== null}
                     label={editing ? fieldMeta[editing].label : ""}
                     value={editing ? profile[editing] : ""}
+                    placeholder={editing ? getPlaceholder(editing) : ""}
                     multiline={editing ? fieldMeta[editing].multiline : false}
                     onSave={(val) => handleSave(editing, val)}
                     onClose={() => setEditing(null)}
