@@ -1,11 +1,14 @@
 import Link from "next/link";
 import Image from "next/image";
+import Cookies from "js-cookie";
+import { jwtDecode } from "jwt-decode";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { getPersonalPosts } from "@/services/post";
 import ConnectWallet from "@/components/connectWallet";
 
 const Wallet = () => {
+    const [address, setAddress] = useState("")
     const [posts, setPosts] = useState([])
 
     const router = useRouter()
@@ -26,9 +29,20 @@ const Wallet = () => {
         }
     }
 
+    const checkToken = async() => {
+        const token = await Cookies.get("token")
+        if(token) {
+            const jwtToken = atob(token)
+            const payload = jwtDecode(jwtToken)
+            const hashFromPayload = payload.hash
+            setAddress(hashFromPayload)
+        }
+    }
+
     useEffect(() => {
         if (hashAddress) {
             fetchPosts()
+            checkToken()
         }
     }, [hashAddress])
 
