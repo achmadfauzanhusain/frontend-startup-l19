@@ -144,7 +144,7 @@ const EditProfile = () => {
                 }
             });
 
-            const response = await editProfile(payload);
+            await editProfile(payload);
             toast.success("Profile updated");
         } catch (error) {
             toast.error(error?.response?.data?.message || "Failed to update profile");

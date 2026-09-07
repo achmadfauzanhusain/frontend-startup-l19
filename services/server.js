@@ -12,7 +12,7 @@ export async function createServer(data) {
     })
 }
 
-export async function getAllServer() {
+export async function getAllServers() {
     const url = `${ROOT_API}/server/all`
     return callApi({
         url,
@@ -20,7 +20,7 @@ export async function getAllServer() {
     })
 }
 
-export async function getMyServer() {
+export async function getMyServers() {
     const url = `${ROOT_API}/server/my/server`
     return callApi({
         url,
@@ -38,7 +38,7 @@ export async function getDetailServer(idServer) {
     })
 }
 
-export async function getDetailServer(hashAddress) {
+export async function getJoinedServers(hashAddress) {
     const url = `${ROOT_API}/server/joined/${hashAddress}`
     return callApi({
         url,

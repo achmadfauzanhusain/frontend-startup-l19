@@ -48,7 +48,7 @@ const Sidebar = () => {
             <Image src="/icon/add.png" alt="Create Post" width={24} height={24} className="inline-block mr-2" />
             Create Post
           </Link>
-          <Link href="/server" className="hover:bg-gray-200/50 py-3 px-3 rounded-sm flex items-center">
+          <Link href={`/${hashAddress}/joined-server`} className="hover:bg-gray-200/50 py-3 px-3 rounded-sm flex items-center">
             <Image src="/icon/community.png" alt="Start Server" width={24} height={24} className="inline-block mr-2" />
             Your Server
           </Link>
@@ -63,6 +63,10 @@ const Sidebar = () => {
           <Link href={`/${hashAddress ? hashAddress : 'login'}`} className="hover:bg-gray-200/50 py-3 px-3 rounded-sm flex items-center">
             <Image src="/icon/wallet.png" alt="Wallet" width={24} height={24} className="inline-block mr-2" />
             Wallet
+          </Link>
+          <Link href="/server/create" className="hover:bg-gray-200/50 py-3 px-3 rounded-sm flex items-center">
+            <Image src="/icon/add.png" alt="Create Server" width={24} height={24} className="inline-block mr-2" />
+            Create Server
           </Link>
         </div>
       </div>
