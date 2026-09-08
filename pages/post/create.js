@@ -52,15 +52,18 @@ const CreatePost = () => {
       {/* post create */}
       <div className="w-full md:w-2/3 border-0 md:border-r px-2">
         <div className="mt-2 md:mt-4">
+          <h1 className="text-xl font-semibold">Create Post</h1>
+          <p className="text-sm opacity-50">say it all — your data stays secure</p>
+
           <input
             type="text"
             placeholder="What's on your mind?"
-            className="bg-gray-100 w-full placeholder:text-sm focus:outline-none py-4 px-4 rounded-xl"
+            className="bg-gray-100 mt-4 w-full placeholder:text-sm focus:outline-none py-4 px-4 rounded-xl"
             value={caption}
             onChange={(e) => setCaption(e.target.value)}
           />
 
-          <button onClick={handleCreatePost} className="bg-[#4272FC] mt-5 w-full cursor-pointer text-white py-3 px-4 rounded-lg hover:bg-blue-500 flex justify-center items-center text-xs md:text-sm gap-3">
+          <button onClick={handleCreatePost} className="bg-[#4272FC] mt-3 w-full cursor-pointer text-white py-3 px-4 rounded-lg hover:bg-blue-500 flex justify-center items-center text-xs md:text-sm gap-3">
             <Image src="/icon/add_white.png" alt="Create Post" width={20} height={20} />
             Create Post
           </button>

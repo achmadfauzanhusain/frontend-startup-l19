@@ -33,8 +33,7 @@ export async function getDetailServer(idServer) {
     const url = `${ROOT_API}/server/${idServer}`
     return callApi({
         url,
-        method: "GET",
-        token: true
+        method: "GET"
     })
 }
 
