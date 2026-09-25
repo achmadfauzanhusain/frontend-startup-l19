@@ -1,17 +1,27 @@
 import Link from "next/link";
 import { toast } from "react-toastify";
 import { useState, useEffect } from "react";
-import { getJoinedServers } from "@/services/server";
+import { getJoinedServers, getMyServers } from "@/services/server";
 import { useRouter } from "next/router";
 import ConnectWallet from "@/components/connectWallet";
 
 const Server = () => {
+    const [myServers, setMyServers] = useState([])
     const [servers, setServers] = useState([])
 
     const router = useRouter()
     const { hashAddress } = router.query
 
-    const fetchPersonalServers = async() => {
+    const fetchMyServers = async() => {
+        const response = await getMyServers()
+        if(!response) {
+            toast.error("Failed to fetch servers!")
+        } else {
+            setMyServers(response.data)
+        }
+    }
+
+    const fetchJoinedServers = async() => {
         const response = await getJoinedServers(hashAddress)
         if(!response) {
             toast.error("Failed to fetch servers!")
@@ -22,7 +32,8 @@ const Server = () => {
 
     useEffect(() => {
         if(hashAddress) {
-            fetchPersonalServers()
+            fetchMyServers()
+            fetchJoinedServers()
         }
     }, [hashAddress])
     return(
@@ -36,6 +47,15 @@ const Server = () => {
                     <hr className="border-gray-300 mt-4" />
 
                     <div className="mt-4 grid grid-cols-1 gap-2 md:gap-4 md:grid-cols-2">
+                        {myServers.map((server) => (
+                            <Link key={server.id} href={`/server/${server.id}`} className="border border-gray-300 py-4 px-3 rounded-md flex gap-2 items-center">
+                                <div className="p-4 rounded-4xl bg-blue-300"></div>
+                                <div>
+                                    <h1 className="text-sm">{server.serverName}</h1>
+                                    <p className="text-xs text-gray-500">{server.members} <span className="text-black font-semibold">member</span></p>
+                                </div>
+                            </Link>
+                        ))}
                         {servers.map((server) => (
                             <Link key={server.id} href={`/server/${server.id}`} className="border border-gray-300 py-4 px-3 rounded-md flex gap-2 items-center">
                                 <div className="p-4 rounded-4xl bg-blue-300"></div>

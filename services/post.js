@@ -27,3 +27,11 @@ export async function createPost(data) {
         token: true
     })
 }
+
+export async function getServerPosts(idServer) {
+    const url = `${ROOT_API}/post/server/${idServer}`
+    return callApi({
+        url,
+        method: "GET",
+    })
+}
