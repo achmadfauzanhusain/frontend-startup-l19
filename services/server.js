@@ -45,3 +45,13 @@ export async function getJoinedServers(hashAddress) {
         token: true
     })
 }
+
+export async function createPostServer(idServer, data) {
+    const url = `${ROOT_API}/server/${idServer}/create`
+    return callApi({
+        url,
+        method: "POST",
+        data,
+        token: true
+    })
+}

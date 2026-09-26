@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Cookies from "js-cookie";
+import { useRouter } from "next/router";
 import { jwtDecode } from "jwt-decode";
 import { createPost } from "@/services/post";
 import ConnectWallet from "@/components/connectWallet";
@@ -9,23 +10,9 @@ import { toast } from "react-toastify";
 
 const CreatePost = () => {
     const [account, setAccount] = useState("")
-    const [caption, setCaption] = useState("");
+    const [caption, setCaption] = useState("")
 
-    const handleCreatePost = async() => {
-      const data = { caption }
-
-      if(!data.caption) {
-        toast.error("Caption is required")
-      } else {
-        const res = await createPost(data)
-        if(!res) {
-          toast.error(res.message)
-        } else {
-          toast.success("Post created successfully")
-          setCaption("")
-        }
-      }
-    }
+    const router = useRouter()
 
     const checkToken = async() => {
         const token = await Cookies.get("token")
@@ -47,6 +34,27 @@ const CreatePost = () => {
     useEffect(() => {
       checkToken()
     }, [])
+
+    const handleCreatePost = async() => {
+      const data = { caption }
+
+      if(!data.caption) {
+        toast.error("Caption is required")
+      } else {
+        const konfir = confirm("u want to post?")
+
+        if(konfir) {
+          const res = await createPost(data)
+          if(res.error) {
+            toast.error(res.message)
+          } else {
+            toast.success("Post created successfully")
+            setCaption("")
+            router.push(`/${account.hash}`)
+          }
+        }
+      }
+    }
     return (
     <div className="flex flex-col gap-2 md:flex-row">
       {/* post create */}
