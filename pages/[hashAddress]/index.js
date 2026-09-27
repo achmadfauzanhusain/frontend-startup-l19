@@ -4,6 +4,8 @@ import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import {toast} from "react-toastify"; // ganti sesuai library toast yang kamu pakai
+import { getDetailServer } from "@/services/server";
 import { getPersonalPosts } from "@/services/post";
 import { dataUser } from "@/services/user";
 import ConnectWallet from "@/components/connectWallet";
@@ -12,6 +14,7 @@ const Wallet = () => {
     const [address, setAddress] = useState("")
     const [user, setUser] = useState({})
     const [posts, setPosts] = useState([])
+    const [serverDetails, setServerDetails] = useState({})
 
     const router = useRouter()
     const { hashAddress } = router.query
@@ -21,27 +24,28 @@ const Wallet = () => {
         if (address.length <= start + end) return address;
         return `${address.slice(0, start)}...${address.slice(-end)}`;
     }
-    
-    const fetchPosts = async() => {
+
+    const fetchPosts = async () => {
         const response = await getPersonalPosts(hashAddress)
-        if(!response) {
+        if (!response) {
             toast.error("Failed to fetch posts")
         } else {
             setPosts(response.data)
         }
     }
-    const fetchDataUser = async() => {
+
+    const fetchDataUser = async () => {
         const response = await dataUser(hashAddress)
-        if(!response) {
-            toast.error("Failed to fetch posts")
+        if (!response) {
+            toast.error("Failed to fetch user")
         } else {
             setUser(response.data)
         }
     }
 
-    const checkToken = async() => {
-        const token = await Cookies.get("token")
-        if(token) {
+    const checkToken = async () => {
+        const token = Cookies.get("token")
+        if (token) {
             const jwtToken = atob(token)
             const payload = jwtDecode(jwtToken)
             const hashFromPayload = payload.hash
@@ -77,6 +81,46 @@ const Wallet = () => {
             minute: "2-digit",
         });
     }
+
+    useEffect(() => {
+        if (!posts || posts.length === 0) return
+
+        const uniqueServerIds = [
+            ...new Set(posts.map((p) => p.server).filter(Boolean))
+        ]
+
+        const idsToFetch = uniqueServerIds.filter((id) => !(id in serverDetails))
+        if (idsToFetch.length === 0) return
+
+        let isMounted = true
+
+        const fetchAll = async () => {
+            const results = await Promise.all(
+                idsToFetch.map(async (id) => {
+                    try {
+                        const response = await getDetailServer(id)
+                        return [id, response?.data ?? null]
+                    } catch (err) {
+                        console.error(`Failed to fetch server ${id}`, err)
+                        return [id, null]
+                    }
+                })
+            )
+
+            if (!isMounted) return
+            setServerDetails((prev) => {
+                const next = { ...prev }
+                results.forEach(([id, data]) => {
+                    next[id] = data
+                })
+                return next
+            })
+        }
+
+        fetchAll()
+        return () => { isMounted = false }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [posts])
     return (
         <div className="flex flex-col gap-2 md:flex-row pb-12">
             <div className="w-full md:w-2/3 border-0 md:border-r border-gray-200 px-4 md:px-6">
@@ -101,18 +145,18 @@ const Wallet = () => {
 
                         <div className="mt-4 flex gap-2 justify-center sm:justify-start">
                             {address == user?.hash ? (
-                            <Link
-                                href="/edit-profile"
-                                className="text-xs font-medium py-2 px-6 sm:px-4 sm:w-full rounded-lg bg-gray-200 hover:bg-gray-300 text-center transition-colors"
-                            >
-                                Edit profile
-                            </Link>
+                                <Link
+                                    href="/edit-profile"
+                                    className="text-xs font-medium py-2 px-6 sm:px-4 sm:w-full rounded-lg bg-gray-200 hover:bg-gray-300 text-center transition-colors"
+                                >
+                                    Edit profile
+                                </Link>
                             ) : (
-                            <button
-                                className="text-xs font-medium py-2 px-6 sm:px-4 sm:w-full rounded-lg bg-blue-500 hover:bg-blue-600 text-white text-center transition-colors"
-                            >
-                                follow
-                            </button>
+                                <button
+                                    className="text-xs font-medium py-2 px-6 sm:px-4 sm:w-full rounded-lg bg-blue-500 hover:bg-blue-600 text-white text-center transition-colors"
+                                >
+                                    follow
+                                </button>
                             )}
                         </div>
                     </div>
@@ -120,7 +164,7 @@ const Wallet = () => {
 
                 <div className="mt-4 text-center sm:text-left">
                     <p className="text-xs md:text-sm text-gray-500">{user?.bio ? user?.bio : ""}</p>
-                    
+
                     <div className="mt-2 flex gap-2 items-center justify-center sm:justify-start">
                         <Link href={user?.link1 ? user?.link1 : ""} className="text-xs md:text-sm text-blue-500 hover:text-blue-700">
                             {user?.nameLink1 ? user?.nameLink1 : ""}
@@ -139,17 +183,21 @@ const Wallet = () => {
 
                 <div className="mt-4 flex flex-col gap-6">
                     {posts?.map((post) => {
+                        const server = serverDetails[post.server]
                         return (
                             <div key={post.id} className="border-b border-gray-300 pb-6">
                                 {/* header */}
-                                <Link href="/fauzanchenko" className="flex gap-2 items-center">
+                                <Link href={`/${post.user}`} className="flex gap-2 items-center">
                                     {/* <Image /> */}
                                     <div className="bg-blue-300 rounded-4xl p-4"></div>
 
                                     {/* user info */}
                                     <div className="text-xs">
                                         <h2 className="font-semibold">{truncateAddress(post.user)}</h2>
-                                        <p className="opacity-50">{post.createdAt ? formatTimestamp(post.createdAt) : "-"}</p>
+                                        <p className="flex gap-2">
+                                            <span className="opacity-50">{post.createdAt ? formatTimestamp(post.createdAt) : "-"}</span>
+                                            <span className="bg-orange-500 text-white">{server?.serverName ? `server: ${server.serverName}` : ""}</span>
+                                        </p>
                                         <p className="mt-1">{post.caption}</p>
                                     </div>
                                 </Link>

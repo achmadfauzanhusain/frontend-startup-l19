@@ -73,7 +73,7 @@ const MainContent = () => {
               return (
                             <div key={post.id} className="border-b border-gray-300 pb-6">
                                 {/* header */}
-                                <Link href="/fauzanchenko" className="flex gap-2 items-center">
+                                <Link href={`/${post.user}`} className="flex gap-2 items-center">
                                     {/* <Image /> */}
                                     <div className="bg-blue-300 rounded-4xl p-4"></div>
 

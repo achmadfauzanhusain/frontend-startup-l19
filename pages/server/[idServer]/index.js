@@ -6,14 +6,18 @@ import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
 import Link from "next/link";
 
+import { dataUser } from "@/services/user";
 import { getServerPosts } from "@/services/post";
 import { getDetailServer } from "@/services/server"
 import ConnectWallet from "@/components/connectWallet"
 
 const DetailServer = () => {
     const [server, setServer] = useState({})
-    const [owner, setOwner] = useState(false)
     const [serverPosts, setServerPosts] = useState([])
+    const [user, setUser] = useState("")
+
+    const [owner, setOwner] = useState(false)
+    const [join, setJoin] = useState(false)
 
     const router = useRouter()
     const { idServer } = router.query
@@ -50,10 +54,26 @@ const DetailServer = () => {
             const jwtToken = atob(token)
             const payload = jwtDecode(jwtToken)
             const hashFromPayload = payload.hash
+            setUser(hashFromPayload)
 
             if(hashFromPayload === server.owner) {
                 setOwner(true)
             }
+        }
+    }
+
+    const checkJoin = async() => {
+        try {
+            const getDataUser = await dataUser(user)
+            const moreDataUser = getDataUser.data
+
+            const joinedServers = Array.isArray(moreDataUser?.servers) ? moreDataUser.servers : []
+            const isJoined = joinedServers.includes(idServer)
+            const isOwner = server.owner === user
+
+            setJoin(isJoined || isOwner)
+        } catch (error) {
+            toast.error("Failed to check join status:", error)
         }
     }
 
@@ -70,6 +90,11 @@ const DetailServer = () => {
         }
     }, [server])
 
+    useEffect(() => {
+        if (user) {
+            checkJoin()
+        }
+    }, [user])
     const formatTimestamp = (timestamp) => {
         if (!timestamp) return "-";
 
@@ -106,16 +131,29 @@ const DetailServer = () => {
                             <button className="bg-green-500 hover:bg-green-600 transition-all duration-300 cursor-pointer text-white px-4 py-2 rounded-2xl text-sm">
                                 You're the Owner
                             </button>
+                        ) : join ? (
+                            <button className="bg-gray-400 cursor-not-allowed text-white px-4 py-2 rounded-2xl text-sm" disabled>
+                                Joined
+                            </button>
                         ) : (
-                            <button className="bg-blue-500 hover:bg-blue-600 transition-all duration-300 cursor-pointer text-white px-4 py-2 rounded-2xl text-sm">
+                            <button
+                                onClick=""
+                                className="bg-blue-500 hover:bg-blue-600 transition-all duration-300 cursor-pointer text-white px-4 py-2 rounded-2xl text-sm"
+                            >
                                 Join
                             </button>
                         )}
 
-                        <Link href={`/server/${idServer}/create`} className="border cursor-pointer flex items-center justify-between gap-1 border-blue-500 text-blue-500 px-4 py-2 rounded-2xl text-sm">
-                            <Image className="text-blue-500" src="/icon/add_blue.png" width={20} height={15} />
-                            Create Post
-                        </Link>
+                        {join ? (
+                            <Link href={`/server/${idServer}/create`} className="border cursor-pointer flex items-center justify-between gap-1 border-blue-500 text-blue-500 px-4 py-2 rounded-2xl text-sm">
+                                <Image className="text-blue-500" src="/icon/add_blue.png" width={20} height={15} />
+                                Create Post
+                            </Link>
+                        ) : 
+                        (
+                            <div></div>
+                        )
+                        }
                     </div>
 
                     {/* server posts */}
@@ -124,7 +162,7 @@ const DetailServer = () => {
                             return (
                                 <div key={post.id} className="border-b border-gray-300 pb-6">
                                     {/* header */}
-                                    <Link href="/fauzanchenko" className="flex gap-2 items-center">
+                                    <Link href={`/${post.user}`} className="flex gap-2 items-center">
                                         {/* <Image /> */}
                                         <div className="bg-blue-300 rounded-4xl p-4"></div>
 
