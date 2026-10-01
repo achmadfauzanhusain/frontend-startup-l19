@@ -8,13 +8,14 @@ import Link from "next/link";
 
 import { dataUser } from "@/services/user";
 import { getServerPosts } from "@/services/post";
-import { getDetailServer } from "@/services/server"
+import { getDetailServer, joinServer, leaveServer } from "@/services/server"
 import ConnectWallet from "@/components/connectWallet"
 
 const DetailServer = () => {
     const [server, setServer] = useState({})
     const [serverPosts, setServerPosts] = useState([])
     const [user, setUser] = useState("")
+    const [loading, setLoading] = useState(false)
 
     const [owner, setOwner] = useState(false)
     const [join, setJoin] = useState(false)
@@ -115,6 +116,54 @@ const DetailServer = () => {
             minute: "2-digit",
         });
     }
+
+    const handleJoinServer = async () => {
+        if (loading) return
+        setLoading(true)
+
+        try {
+            const ask = confirm("want to join this server?")
+            if (!ask) return
+
+            const response = await joinServer(idServer)
+            if (!response) {
+                toast.error("Failed to join server!")
+                return
+            }
+            toast.success("Successfully joined the server!")
+
+            await fetchDetailServer()
+            await checkJoin()
+        } catch (error) {
+            toast.error("Failed to join server!")
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const handleLeaveServer = async () => {
+        if (loading) return
+        setLoading(true)
+
+        try {
+            const ask = confirm("want to leave this server?")
+            if (!ask) return
+
+            const response = await leaveServer(idServer)
+            if (!response) {
+                toast.error("Failed to leave server!")
+                return
+            }
+            toast.success("Successfully left the server!")
+
+            await fetchDetailServer()
+            await checkJoin()
+        } catch (error) {
+            toast.error("Failed to leave server!")
+        } finally {
+            setLoading(false)
+        }
+    }
     return (
         <div className="flex flex-col gap-2 md:flex-row">
             <div className="w-full md:w-2/3 border-0 md:border-r px-2">
@@ -132,12 +181,17 @@ const DetailServer = () => {
                                 You're the Owner
                             </button>
                         ) : join ? (
-                            <button className="bg-gray-400 cursor-pointer text-white px-4 py-2 rounded-2xl text-sm">
+                            <button
+                                disabled={loading}
+                                onClick={handleLeaveServer}
+                                className="bg-gray-400 cursor-pointer text-white px-4 py-2 rounded-2xl text-sm"
+                            >
                                 Joined
                             </button>
                         ) : (
                             <button
-                                onClick=""
+                                disabled={loading}
+                                onClick={handleJoinServer}
                                 className="bg-blue-500 hover:bg-blue-600 transition-all duration-300 cursor-pointer text-white px-4 py-2 rounded-2xl text-sm"
                             >
                                 Join
