@@ -128,11 +128,11 @@ const DetailServer = () => {
                     <hr className="mt-4 opacity-50 border border-gray-400" />
                     <div className="mt-2 flex justify-between">
                         {owner ? (
-                            <button className="bg-green-500 hover:bg-green-600 transition-all duration-300 cursor-pointer text-white px-4 py-2 rounded-2xl text-sm">
+                            <button className="bg-green-500 hover:bg-green-600 cursor-pointer transition-all duration-300 text-white px-4 py-2 rounded-2xl text-sm">
                                 You're the Owner
                             </button>
                         ) : join ? (
-                            <button className="bg-gray-400 cursor-not-allowed text-white px-4 py-2 rounded-2xl text-sm" disabled>
+                            <button className="bg-gray-400 cursor-pointer text-white px-4 py-2 rounded-2xl text-sm">
                                 Joined
                             </button>
                         ) : (
