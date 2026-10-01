@@ -55,3 +55,21 @@ export async function createPostServer(idServer, data) {
         token: true
     })
 }
+
+export async function joinServer(idServer) {
+    const url = `${ROOT_API}/server/${idServer}/join`
+    return callApi({
+        url,
+        method: "PUT",
+        token: true
+    })
+}
+
+export async function leaveServer(idServer) {
+    const url = `${ROOT_API}/server/${idServer}/leave`
+    return callApi({
+        url,
+        method: "PUT",
+        token: true
+    })
+}
