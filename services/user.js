@@ -19,3 +19,11 @@ export async function editProfile(data) {
         data
     })
 }
+
+export async function search(q) {
+    const url = `${ROOT_API}/user/search?q=${q}`
+    return callApi({
+        url,
+        method: "GET",
+    })
+}
