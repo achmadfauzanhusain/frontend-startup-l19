@@ -44,3 +44,11 @@ export async function toggleLikePost(postId) {
         token: true
     });
 }
+
+export async function checkLikePost(postId) {
+    const url = `${ROOT_API}/post/${postId}/like/status`;
+    return callApi({
+        url,
+        method: "GET",
+    });
+}
