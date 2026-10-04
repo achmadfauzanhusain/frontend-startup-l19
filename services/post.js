@@ -35,3 +35,12 @@ export async function getServerPosts(idServer) {
         method: "GET",
     })
 }
+
+export async function toggleLikePost(postId) {
+    const url = `${ROOT_API}/post/${postId}/like`;
+    return callApi({
+        url,
+        method: "POST",
+        token: true
+    });
+}
