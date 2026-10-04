@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { useAccount } from 'wagmi';
+import { useAccount, useAccountEffect } from 'wagmi';
 import { toast } from "react-toastify";
 import { jwtDecode } from "jwt-decode";
 import { useRouter } from "next/router";
@@ -22,6 +22,10 @@ const Login = () => {
     const router = useRouter()
 
     const handleRegister = async() => {
+        if(!address) {
+            toast.error("connect ur wallet first!")
+            return
+        }
         const response = await setRegister({ address })
         if(response.error) {
             toast.error(response.message)
@@ -35,6 +39,7 @@ const Login = () => {
         try {
             if(!address) {
                 toast.error("u must register before generating the proof!")
+                return
             }
             const { proof, publicSignals } = await generateProof(address)
 
@@ -49,14 +54,14 @@ const Login = () => {
         }
     }
     const handleLogin = async() => {
-        const data = { proof, publicSignals }
-        if(!proof && !publicSignals) {
+        if(!proof || !publicSignals) {
             toast.error("u must generating proof before login!")
+            return
         }
 
-        const response = await setLogin(data)
+        const response = await setLogin({ proof, publicSignals })
         if(response.error) {
-            toast.error(response.error)
+            toast.error(response.message)
         } else {
             const token = response.data.data
             const tokenBase64 = btoa(token)
@@ -67,28 +72,37 @@ const Login = () => {
         }
     }
 
-    const checkToken = async() => {
-        const token = await Cookies.get("token")
-        if(token) {
+    const checkToken = () => {
+        const token = Cookies.get("token")
+        if(!token) return
+
+        try {
             const jwtToken = atob(token)
-            const payload = jwtDecode(jwtToken)
-            const hashFromPayload = payload.hash
+            jwtDecode(jwtToken)
 
             setAlreadyRegister(true)
             setAlreadyGenerateProof(true)
             setAlreadyLogin(true)
-        }
-    }
-    const removeTokenWhenDisconnected = async() => {
-        if(isDisconnected) {
+        } catch (error) {
+            console.error("Invalid token cookie", error)
             Cookies.remove("token")
         }
     }
 
+    useAccountEffect({
+        onDisconnect() {
+            Cookies.remove("token")
+            setAlreadyRegister(false)
+            setAlreadyGenerateProof(false)
+            setAlreadyLogin(false)
+            setProof(null)
+            setPublicSignals(null)
+        },
+    })
+
     useEffect(() => {
         checkToken()
-        removeTokenWhenDisconnected()
-    }, [isDisconnected])
+    }, [])
     return (
         <div className="flex flex-col gap-2 md:flex-row pb-12">
             <div className="w-full md:w-2/3 border-0 md:border-r px-2">

@@ -44,11 +44,11 @@ const Sidebar = () => {
             <Image src="/icon/homepage.png" alt="Home" width={24} height={24} className="inline-block mr-2" />
             Home
           </Link>
-          <Link href="/post/create" className="hover:bg-gray-200/50 py-3 px-3 rounded-sm flex items-center">
+          <Link href={`${hashAddress ? "/post/create" : '/login'}`} className="hover:bg-gray-200/50 py-3 px-3 rounded-sm flex items-center">
             <Image src="/icon/add.png" alt="Create Post" width={24} height={24} className="inline-block mr-2" />
             Create Post
           </Link>
-          <Link href={`/${hashAddress}/joined-server`} className="hover:bg-gray-200/50 py-3 px-3 rounded-sm flex items-center">
+          <Link href={`/${hashAddress ? hashAddress + "/joined-server" : '/login'}`} className="hover:bg-gray-200/50 py-3 px-3 rounded-sm flex items-center">
             <Image src="/icon/community.png" alt="Start Server" width={24} height={24} className="inline-block mr-2" />
             Your Server
           </Link>
@@ -64,7 +64,7 @@ const Sidebar = () => {
             <Image src="/icon/wallet.png" alt="Wallet" width={24} height={24} className="inline-block mr-2" />
             Wallet
           </Link>
-          <Link href="/server/create" className="hover:bg-gray-200/50 py-3 px-3 rounded-sm flex items-center">
+          <Link href={`/${hashAddress ?"/server/create" : '/login'}`} className="hover:bg-gray-200/50 py-3 px-3 rounded-sm flex items-center">
             <Image src="/icon/add.png" alt="Create Server" width={24} height={24} className="inline-block mr-2" />
             Create Server
           </Link>
