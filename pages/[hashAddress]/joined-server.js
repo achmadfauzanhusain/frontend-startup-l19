@@ -47,7 +47,7 @@ const Server = () => {
                     <hr className="border-gray-300 mt-4" />
 
                     <div className="mt-4 grid grid-cols-1 gap-2 md:gap-4 md:grid-cols-2">
-                        {myServers.map((server) => (
+                        {myServers?.map((server) => (
                             <Link key={server.id} href={`/server/${server.id}`} className="border border-gray-300 py-4 px-3 rounded-md flex gap-2 items-center">
                                 <div className="p-4 rounded-4xl bg-blue-300"></div>
                                 <div>

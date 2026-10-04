@@ -203,7 +203,7 @@ const Wallet = () => {
                                 </Link>
 
                                 {/* content */}
-                                {post.image ? (
+                                {post?.image ? (
                                     <div className="mt-2 flex flex-col md:flex-row">
                                         <div className="flex justify-between flex-row md:flex-col py-3 md:px-3 gap-6 order-2 md:order-1">
                                             <div className="flex flex-row md:flex-col gap-6">
