@@ -4,16 +4,34 @@ import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import {toast} from "react-toastify"; // ganti sesuai library toast yang kamu pakai
+import { toast } from "react-toastify";
 import { getDetailServer } from "@/services/server";
-import { getPersonalPosts } from "@/services/post";
+import { getPersonalPosts, toggleLikePost, checkLikePost } from "@/services/post";
 import { dataUser } from "@/services/user";
 import ConnectWallet from "@/components/connectWallet";
+
+// Ikon hati: merah penuh kalau sudah di-like, outline kalau belum
+const HeartIcon = ({ filled, size = 20 }) => (
+    <svg
+        width={size}
+        height={size}
+        viewBox="0 0 24 24"
+        fill={filled ? "#ef4444" : "none"}
+        stroke={filled ? "#ef4444" : "currentColor"}
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
+    >
+        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+    </svg>
+)
 
 const Wallet = () => {
     const [address, setAddress] = useState("")
     const [user, setUser] = useState({})
     const [posts, setPosts] = useState([])
+    const [likedPosts, setLikedPosts] = useState({}) // { [postId]: boolean }
     const [serverDetails, setServerDetails] = useState({})
 
     const router = useRouter()
@@ -25,12 +43,33 @@ const Wallet = () => {
         return `${address.slice(0, start)}...${address.slice(-end)}`;
     }
 
+    // Ambil status like untuk setiap post
+    const fetchLikeStatuses = async (postList) => {
+        const results = await Promise.all(
+            postList.map(async (post) => {
+                const res = await checkLikePost(post.id)
+                return [post.id, res ? Boolean(res.data) : false]
+            })
+        )
+        setLikedPosts(Object.fromEntries(results))
+    }
+
     const fetchPosts = async () => {
         const response = await getPersonalPosts(hashAddress)
         if (!response) {
             toast.error("Failed to fetch posts")
         } else {
             setPosts(response.data)
+            fetchLikeStatuses(response.data)
+        }
+    }
+
+    const handlerLike = async (postId) => {
+        const response = await toggleLikePost(postId)
+        if (!response) {
+            toast.error("Failed to like post")
+        } else {
+            fetchPosts() // refresh jumlah like + status like
         }
     }
 
@@ -184,6 +223,8 @@ const Wallet = () => {
                 <div className="mt-4 flex flex-col gap-6">
                     {posts?.map((post) => {
                         const server = serverDetails[post.server]
+                        const isLiked = Boolean(likedPosts[post.id])
+
                         return (
                             <div key={post.id} className="border-b border-gray-300 pb-6">
                                 {/* header */}
@@ -207,8 +248,14 @@ const Wallet = () => {
                                     <div className="mt-2 flex flex-col md:flex-row">
                                         <div className="flex justify-between flex-row md:flex-col py-3 md:px-3 gap-6 order-2 md:order-1">
                                             <div className="flex flex-row md:flex-col gap-6">
-                                                <button className="cursor-pointer">
-                                                    <Image src="/icon/like.png" alt="Like" width={20} height={20} />
+                                                <button
+                                                    className="cursor-pointer flex md:flex-col items-center gap-1"
+                                                    onClick={() => handlerLike(post.id)}
+                                                    aria-label={isLiked ? "Unlike" : "Like"}
+                                                    aria-pressed={isLiked}
+                                                >
+                                                    <HeartIcon filled={isLiked} size={20} />
+                                                    <p className="text-[10px]">{post.likesCount}</p>
                                                 </button>
                                                 <button className="cursor-pointer">
                                                     <Image src="/icon/comment.png" alt="Comment" width={20} height={20} />
@@ -228,8 +275,13 @@ const Wallet = () => {
                                     <div className="mt-2">
                                         <div className="flex justify-between py-1 md:px-2 gap-6">
                                             <div className="flex gap-6">
-                                                <button className="cursor-pointer flex items-center gap-1">
-                                                    <Image src="/icon/like.png" alt="Like" width={15} height={15} />
+                                                <button
+                                                    className="cursor-pointer flex items-center gap-1"
+                                                    onClick={() => handlerLike(post.id)}
+                                                    aria-label={isLiked ? "Unlike" : "Like"}
+                                                    aria-pressed={isLiked}
+                                                >
+                                                    <HeartIcon filled={isLiked} size={15} />
                                                     <p className="text-[10px]">{post.likesCount}</p>
                                                 </button>
                                                 <button className="cursor-pointer flex items-center gap-1">

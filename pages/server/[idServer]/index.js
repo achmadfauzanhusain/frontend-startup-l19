@@ -7,13 +7,30 @@ import { jwtDecode } from "jwt-decode";
 import Link from "next/link";
 
 import { dataUser } from "@/services/user";
-import { getServerPosts } from "@/services/post";
+import { getServerPosts, toggleLikePost, checkLikePost } from "@/services/post";
 import { getDetailServer, joinServer, leaveServer } from "@/services/server"
 import ConnectWallet from "@/components/connectWallet"
+
+const HeartIcon = ({ filled, size = 20 }) => (
+    <svg
+        width={size}
+        height={size}
+        viewBox="0 0 24 24"
+        fill={filled ? "#ef4444" : "none"}
+        stroke={filled ? "#ef4444" : "currentColor"}
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
+    >
+        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+    </svg>
+)
 
 const DetailServer = () => {
     const [server, setServer] = useState({})
     const [serverPosts, setServerPosts] = useState([])
+    const [likedPosts, setLikedPosts] = useState({}) // { [postId]: boolean }
     const [user, setUser] = useState("")
     const [loading, setLoading] = useState(false)
 
@@ -39,6 +56,16 @@ const DetailServer = () => {
         }
     }
 
+    const fetchLikeStatuses = async (postList) => {
+        const results = await Promise.all(
+            postList.map(async (post) => {
+                const res = await checkLikePost(post.id)
+                return [post.id, res ? Boolean(res.data) : false]
+            })
+        )
+        setLikedPosts(Object.fromEntries(results))
+    }
+
     const fetchServerPosts = async() => {
         const response = await getServerPosts(idServer)
 
@@ -46,6 +73,16 @@ const DetailServer = () => {
             toast.error("Failed to fetch servers!")
         } else {
             setServerPosts(response.data)
+            fetchLikeStatuses(response.data)
+        }
+    }
+
+    const handlerLike = async (postId) => {
+        const response = await toggleLikePost(postId)
+        if (!response) {
+            toast.error("Failed to like post")
+        } else {
+            fetchServerPosts()
         }
     }
 
@@ -200,7 +237,7 @@ const DetailServer = () => {
 
                         {join ? (
                             <Link href={`/server/${idServer}/create`} className="border cursor-pointer flex items-center justify-between gap-1 border-blue-500 text-blue-500 px-4 py-2 rounded-2xl text-sm">
-                                <Image className="text-blue-500" src="/icon/add_blue.png" width={20} height={15} />
+                                <Image className="text-blue-500" src="/icon/add_blue.png" alt="Add" width={20} height={15} />
                                 Create Post
                             </Link>
                         ) : 
@@ -213,6 +250,8 @@ const DetailServer = () => {
                     {/* server posts */}
                     <div className="mt-8 flex flex-col gap-6">
                         {serverPosts?.map((post) => {
+                            const isLiked = Boolean(likedPosts[post.id])
+
                             return (
                                 <div key={post.id} className="border-b border-gray-300 pb-6">
                                     {/* header */}
@@ -233,8 +272,14 @@ const DetailServer = () => {
                                         <div className="mt-2 flex flex-col md:flex-row">
                                             <div className="flex justify-between flex-row md:flex-col py-3 md:px-3 gap-6 order-2 md:order-1">
                                                 <div className="flex flex-row md:flex-col gap-6">
-                                                    <button className="cursor-pointer">
-                                                        <Image src="/icon/like.png" alt="Like" width={20} height={20} />
+                                                    <button
+                                                        className="cursor-pointer flex md:flex-col items-center gap-1"
+                                                        onClick={() => handlerLike(post.id)}
+                                                        aria-label={isLiked ? "Unlike" : "Like"}
+                                                        aria-pressed={isLiked}
+                                                    >
+                                                        <HeartIcon filled={isLiked} size={20} />
+                                                        <p className="text-[10px]">{post.likesCount}</p>
                                                     </button>
                                                     <button className="cursor-pointer">
                                                         <Image src="/icon/comment.png" alt="Comment" width={20} height={20} />
@@ -254,8 +299,13 @@ const DetailServer = () => {
                                         <div className="mt-2">
                                             <div className="flex justify-between py-1 md:px-2 gap-6">
                                                 <div className="flex gap-6">
-                                                    <button className="cursor-pointer flex items-center gap-1">
-                                                        <Image src="/icon/like.png" alt="Like" width={15} height={15} />
+                                                    <button
+                                                        className="cursor-pointer flex items-center gap-1"
+                                                        onClick={() => handlerLike(post.id)}
+                                                        aria-label={isLiked ? "Unlike" : "Like"}
+                                                        aria-pressed={isLiked}
+                                                    >
+                                                        <HeartIcon filled={isLiked} size={15} />
                                                         <p className="text-[10px]">{post.likesCount}</p>
                                                     </button>
                                                     <button className="cursor-pointer flex items-center gap-1">

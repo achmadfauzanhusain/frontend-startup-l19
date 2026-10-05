@@ -50,5 +50,6 @@ export async function checkLikePost(postId) {
     return callApi({
         url,
         method: "GET",
+        token: true
     });
 }
