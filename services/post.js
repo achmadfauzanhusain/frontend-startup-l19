@@ -53,3 +53,21 @@ export async function checkLikePost(postId) {
         token: true
     });
 }
+
+export async function detailPost(postId) {
+    const url = `${ROOT_API}/post/${postId}/detail`;
+    return callApi({
+        url,
+        method: "GET",
+    });
+}
+
+export async function commentPost(postId, data) {
+    const url = `${ROOT_API}/post/${postId}/comment`;
+    return callApi({
+        url,
+        method: "POST",
+        data,
+        token: true
+    });
+}

@@ -145,9 +145,9 @@ const MainContent = () => {
                           <HeartIcon filled={isLiked} size={20} />
                           <p className="text-[10px]">{post.likesCount}</p>
                         </button>
-                        <button className="cursor-pointer">
+                        <Link href={`/post/${post.id}`} className="cursor-pointer">
                           <Image src="/icon/comment.png" alt="Comment" width={20} height={20} />
-                        </button>
+                        </Link>
                         <Link href={`/reward/123`} className="cursor-pointer">
                           <Image src="/icon/reward.png" alt="Reward This Post" width={25} height={25} />
                         </Link>
@@ -172,10 +172,10 @@ const MainContent = () => {
                           <HeartIcon filled={isLiked} size={15} />
                           <p className="text-[10px]">{post.likesCount}</p>
                         </button>
-                        <button className="cursor-pointer flex items-center gap-1">
+                        <Link href={`/post/${post.id}`} className="cursor-pointer flex items-center gap-1">
                           <Image src="/icon/comment.png" alt="Comment" width={15} height={15} />
                           <p className="text-[10px]">456</p>
-                        </button>
+                        </Link>
                         <Link href={`/reward/123`} className="cursor-pointer">
                           <Image src="/icon/reward.png" alt="Reward This Post" width={20} height={20} />
                         </Link>
