@@ -63,7 +63,6 @@ const DetailPost = () => {
     const router = useRouter()
     const { postId } = router.query
 
-    // Komentar diasumsikan ada di post.comments (sesuaikan dengan response API)
     const comments = post?.comments ?? []
 
     const fetchPost = async () => {
