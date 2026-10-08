@@ -4,7 +4,6 @@ import { useState, useEffect } from "react"
 import { toast } from "react-toastify"
 import { getAllPosts, toggleLikePost, checkLikePost } from "@/services/post"
 
-// Ikon hati: merah penuh kalau sudah di-like, outline kalau belum
 const HeartIcon = ({ filled, size = 20 }) => (
   <svg
     width={size}
@@ -18,6 +17,29 @@ const HeartIcon = ({ filled, size = 20 }) => (
     aria-hidden="true"
   >
     <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+  </svg>
+)
+
+const PlusIcon = ({ size = 12 }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="3"
+    strokeLinecap="round"
+    aria-hidden="true"
+  >
+    <path d="M12 5v14M5 12h14" />
+  </svg>
+)
+
+const DotsIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <circle cx="12" cy="5" r="1.6" />
+    <circle cx="12" cy="12" r="1.6" />
+    <circle cx="12" cy="19" r="1.6" />
   </svg>
 )
 
@@ -55,7 +77,7 @@ const MainContent = () => {
     if (!response) {
       toast.error("Failed to like post")
     } else {
-      fetchPosts() // refresh jumlah like + status like
+      fetchPosts()
     }
   }
 
@@ -75,7 +97,7 @@ const MainContent = () => {
       return "-"
     }
 
-    return date.toLocaleString("id-ID", {
+    return date.toLocaleString("en-US", {
       day: "2-digit",
       month: "short",
       year: "numeric",
@@ -84,20 +106,40 @@ const MainContent = () => {
     })
   }
 
+  const getName = (post) => (post.displayName ? post.displayName : truncateAddress(post.user))
+
   return (
     <div className="w-full md:w-2/3 border-0 md:border-r px-2">
+      <div className="flex items-center justify-between px-1 py-3">
+        <Link
+          href="/post/create"
+          aria-label="Create post"
+          className="w-6 h-6 rounded-md border-2 border-gray-900 flex items-center justify-center text-gray-900"
+        >
+          <PlusIcon size={12} />
+        </Link>
+
+        <h2 className="bg-orange-500 text-white px-1 font-bold">TBLONETWORKS</h2>
+
+        <div className="flex items-center gap-4 text-gray-900">
+          <Link href="/notifications" aria-label="Notifications">
+            <HeartIcon filled={false} size={22} />
+          </Link>
+        </div>
+      </div>
+
       <div className="mt-2 md:mt-4">
         <Link
           href="/post/create"
-          className="flex flex-col gap-2 py-2 md:py-4 px-2 md:px-4 bg-gray-100 text-sm rounded-xl"
+          className="flex flex-col gap-3 py-3 px-3 md:px-4 bg-gray-100 text-sm rounded-xl"
         >
-          <div className="flex justify-between w-full">
+          <div className="flex justify-between items-center w-full">
             <div className="opacity-50 flex gap-2 items-center">
               <Image src="/icon/write.png" alt="Create Post" width={20} height={20} />
               <p>Say something...</p>
             </div>
 
-            <p className="bg-[#4272FC] text-white py-1 px-4 rounded-2xl">Post!</p>
+            <p className="bg-[#4272FC] text-white text-xs font-medium py-1.5 px-5 rounded-2xl">Post!</p>
           </div>
 
           <div className="flex justify-between w-full">
@@ -108,36 +150,36 @@ const MainContent = () => {
           </div>
         </Link>
 
-        <div className="mt-4 flex flex-col gap-6">
+        <div className="mt-5 flex flex-col gap-6">
           {posts?.map((post) => {
             const isLiked = Boolean(likedPosts[post.id])
 
             return (
-              <div key={post.id} className="border-b border-gray-300 pb-6">
-                {/* header */}
-                <Link href={`/${post.user}`} className="flex gap-2 items-center">
-                  {/* <Image /> */}
-                  <div className="bg-blue-300 rounded-4xl p-4"></div>
+              <div key={post.id} className="border-b border-gray-200 pb-6">
+                <div className="flex items-start justify-between gap-2">
+                  <Link href={`/${post.user}`} className="flex gap-3 items-center">
+                    <div className="p-4 bg-blue-300 rounded-full"></div>
 
-                  {/* user info */}
-                  <div className="text-xs">
-                    <h2 className="font-semibold">
-                      {post.displayName ? post.displayName : truncateAddress(post.user)}
-                    </h2>
-                    <p className="opacity-50">
-                      {post.createdAt ? formatTimestamp(post.createdAt) : "-"}
-                    </p>
-                    <p className="mt-1">{post.caption}</p>
-                  </div>
-                </Link>
+                    <div className="text-xs">
+                      <h2 className="font-semibold text-xs truncate">{getName(post)}</h2>
+                      <p className="opacity-50 text-[11px]">
+                        {post.createdAt ? formatTimestamp(post.createdAt) : "-"}
+                      </p>
+                      <p className="mt-1 text-sm">{post.caption}</p>
+                    </div>
+                  </Link>
 
-                {/* content */}
+                  <button className="cursor-pointer text-gray-500 shrink-0" aria-label="More options">
+                    <DotsIcon />
+                  </button>
+                </div>
+
                 {post.image ? (
-                  <div className="mt-2 flex flex-col md:flex-row">
-                    <div className="flex justify-between flex-row md:flex-col py-3 md:px-3 gap-6 order-2 md:order-1">
-                      <div className="flex flex-row md:flex-col gap-6">
+                  <div className="mt-3 flex flex-row gap-3">
+                    <div className="flex flex-col justify-between py-1 shrink-0">
+                      <div className="flex flex-col items-center gap-5">
                         <button
-                          className="cursor-pointer flex md:flex-col items-center gap-1"
+                          className="cursor-pointer flex flex-col items-center gap-1"
                           onClick={() => handlerLike(post.id)}
                           aria-label={isLiked ? "Unlike" : "Like"}
                           aria-pressed={isLiked}
@@ -157,11 +199,11 @@ const MainContent = () => {
                         <Image src="/icon/share.png" alt="Share" width={20} height={20} />
                       </button>
                     </div>
-                    <div className="bg-red-200 w-full h-[280px] sm:h-[375px] md:h-[300px] lg:h-[375px] md:w-[300px] lg:w-[375px] order-1 md:order-2"></div>
+                    <div className="bg-red-200 rounded-2xl flex-1 h-[280px] sm:h-[375px] md:h-[300px] lg:h-[375px] md:max-w-[375px]"></div>
                   </div>
                 ) : (
                   <div className="mt-2">
-                    <div className="flex justify-between py-1 md:px-2 gap-6">
+                    <div className="flex justify-between py-1 gap-6">
                       <div className="flex gap-6">
                         <button
                           className="cursor-pointer flex items-center gap-1"

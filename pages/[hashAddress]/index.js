@@ -10,7 +10,6 @@ import { getPersonalPosts, toggleLikePost, checkLikePost } from "@/services/post
 import { dataUser } from "@/services/user";
 import ConnectWallet from "@/components/connectWallet";
 
-// Ikon hati: merah penuh kalau sudah di-like, outline kalau belum
 const HeartIcon = ({ filled, size = 20 }) => (
     <svg
         width={size}
@@ -27,12 +26,51 @@ const HeartIcon = ({ filled, size = 20 }) => (
     </svg>
 )
 
+const GridIcon = ({ active }) => (
+    <svg
+        width="22"
+        height="22"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke={active ? "#111827" : "#9ca3af"}
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
+    >
+        <rect x="3" y="3" width="7" height="7" />
+        <rect x="14" y="3" width="7" height="7" />
+        <rect x="3" y="14" width="7" height="7" />
+        <rect x="14" y="14" width="7" height="7" />
+    </svg>
+)
+
+const RepostIcon = ({ active }) => (
+    <svg
+        width="22"
+        height="22"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke={active ? "#111827" : "#9ca3af"}
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
+    >
+        <path d="M17 1l4 4-4 4" />
+        <path d="M3 11V9a4 4 0 0 1 4-4h14" />
+        <path d="M7 23l-4-4 4-4" />
+        <path d="M21 13v2a4 4 0 0 1-4 4H3" />
+    </svg>
+)
+
 const Wallet = () => {
     const [address, setAddress] = useState("")
     const [user, setUser] = useState({})
     const [posts, setPosts] = useState([])
-    const [likedPosts, setLikedPosts] = useState({}) // { [postId]: boolean }
+    const [likedPosts, setLikedPosts] = useState({})
     const [serverDetails, setServerDetails] = useState({})
+    const [activeTab, setActiveTab] = useState("posts")
 
     const router = useRouter()
     const { hashAddress } = router.query
@@ -43,7 +81,6 @@ const Wallet = () => {
         return `${address.slice(0, start)}...${address.slice(-end)}`;
     }
 
-    // Ambil status like untuk setiap post
     const fetchLikeStatuses = async (postList) => {
         const results = await Promise.all(
             postList.map(async (post) => {
@@ -69,7 +106,7 @@ const Wallet = () => {
         if (!response) {
             toast.error("Failed to like post")
         } else {
-            fetchPosts() // refresh jumlah like + status like
+            fetchPosts()
         }
     }
 
@@ -89,6 +126,15 @@ const Wallet = () => {
             const payload = jwtDecode(jwtToken)
             const hashFromPayload = payload.hash
             setAddress(hashFromPayload)
+        }
+    }
+
+    const handlerShare = async () => {
+        try {
+            await navigator.clipboard.writeText(window.location.href)
+            toast.success("Link copied")
+        } catch (err) {
+            toast.error("Failed to copy link")
         }
     }
 
@@ -112,7 +158,7 @@ const Wallet = () => {
             return "-";
         }
 
-        return date.toLocaleString("id-ID", {
+        return date.toLocaleString("en-US", {
             day: "2-digit",
             month: "short",
             year: "numeric",
@@ -158,150 +204,247 @@ const Wallet = () => {
 
         fetchAll()
         return () => { isMounted = false }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [posts])
+
+    const isOwner = address == user?.hash
+    const initial = user?.displayName ? user.displayName.charAt(0).toUpperCase() : "?"
+
+    const links = [
+        { href: user?.link1, name: user?.nameLink1 },
+        { href: user?.link2, name: user?.nameLink2 },
+        { href: user?.link3, name: user?.nameLink3 },
+    ].filter((item) => item.href && item.name)
+
     return (
         <div className="flex flex-col gap-2 md:flex-row pb-12">
-            <div className="w-full md:w-2/3 border-0 md:border-r border-gray-200 px-4 md:px-6">
-                <div className="flex flex-col sm:flex-row gap-5 mt-8">
-                    <div className="flex justify-center sm:block">
-                        <div className="relative w-24 h-24 sm:w-[130px] sm:h-[130px] md:w-[150px] md:h-[150px] rounded-2xl bg-gradient-to-br from-blue-400 via-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/20 shrink-0">
-                            <span className="text-white text-2xl sm:text-3xl md:text-4xl font-bold tracking-wide">FC</span>
-                        </div>
-                    </div>
-
-                    <div className="w-full text-center sm:text-left">
-                        <h2 className="text-base font-semibold md:text-lg">{user?.displayName ? user?.displayName : "-"}</h2>
-
-                        <div className="mt-2 inline-flex sm:flex items-center gap-2 bg-gray-100 rounded-full px-3 py-1.5 max-w-full">
-                            <svg className="w-3.5 h-3.5 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 010 5.656l-4 4a4 4 0 01-5.656-5.656l1.5-1.5M10.172 13.828a4 4 0 010-5.656l4-4a4 4 0 015.656 5.656l-1.5 1.5" />
+            <div className="w-full md:w-2/3 border-0 md:border-r border-gray-200">
+                <div className="sticky top-0 z-10 bg-white flex items-center justify-between px-4 py-3">
+                    {isOwner ? (
+                        <Link href="/post/create" aria-label="Create post" className="text-gray-900">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+                                <path d="M12 5v14M5 12h14" />
                             </svg>
-                            <span className="text-xs font-mono text-gray-600 truncate">
-                                {hashAddress ? truncateAddress(hashAddress) : "Not available"}
-                            </span>
-                        </div>
+                        </Link>
+                    ) : (
+                        <button onClick={() => router.back()} aria-label="Back" className="text-gray-900 cursor-pointer">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                <path d="M15 18l-6-6 6-6" />
+                            </svg>
+                        </button>
+                    )}
+                </div>
 
-                        <div className="mt-4 flex gap-2 justify-center sm:justify-start">
-                            {address == user?.hash ? (
+                <div className="px-4 md:px-6">
+                    <div className="flex gap-4 items-start mt-2">
+                        <div className="relative shrink-0">
+                            <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-gradient-to-br from-blue-400 via-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
+                                <span className="text-white text-2xl sm:text-3xl font-bold">{initial}</span>
+                            </div>
+                            {isOwner && (
                                 <Link
                                     href="/edit-profile"
-                                    className="text-xs font-medium py-2 px-6 sm:px-4 sm:w-full rounded-lg bg-gray-200 hover:bg-gray-300 text-center transition-colors"
+                                    aria-label="Edit profile photo"
+                                    className="absolute -bottom-1 -left-1 w-6 h-6 rounded-full bg-blue-500 border-2 border-white flex items-center justify-center text-white"
                                 >
-                                    Edit profile
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" aria-hidden="true">
+                                        <path d="M12 5v14M5 12h14" />
+                                    </svg>
                                 </Link>
-                            ) : (
-                                <button
-                                    className="text-xs font-medium py-2 px-6 sm:px-4 sm:w-full rounded-lg bg-blue-500 hover:bg-blue-600 text-white text-center transition-colors"
-                                >
-                                    follow
-                                </button>
                             )}
                         </div>
-                    </div>
-                </div>
 
-                <div className="mt-4 text-center sm:text-left">
-                    <p className="text-xs md:text-sm text-gray-500">{user?.bio ? user?.bio : ""}</p>
+                        <div className="flex-1 min-w-0">
+                            <h2 className="text-sm font-semibold text-gray-900 truncate">
+                                {user?.displayName ? user.displayName.split(" ")[0] : "-"}
+                            </h2>
 
-                    <div className="mt-2 flex gap-2 items-center justify-center sm:justify-start">
-                        <Link href={user?.link1 ? user?.link1 : ""} className="text-xs md:text-sm text-blue-500 hover:text-blue-700">
-                            {user?.nameLink1 ? user?.nameLink1 : ""}
-                        </Link>
-
-                        <Link href={user?.link2 ? user?.link2 : ""} className="text-xs md:text-sm text-blue-500 hover:text-blue-700">
-                            {user?.nameLink2 ? user?.nameLink2 : ""}
-                        </Link>
-
-                        <Link href={user?.link3 ? user?.link3 : ""} className="text-xs md:text-sm text-blue-500 hover:text-blue-700">
-                            {user?.nameLink3 ? user?.nameLink3 : ""}
-                        </Link>
-                    </div>
-                </div>
-                <hr className="mt-4 text-gray-300" />
-
-                <div className="mt-4 flex flex-col gap-6">
-                    {posts?.map((post) => {
-                        const server = serverDetails[post.server]
-                        const isLiked = Boolean(likedPosts[post.id])
-
-                        return (
-                            <div key={post.id} className="border-b border-gray-300 pb-6">
-                                {/* header */}
-                                <Link href={`/${post.user}`} className="flex gap-2 items-center">
-                                    {/* <Image /> */}
-                                    <div className="bg-blue-300 rounded-4xl p-4"></div>
-
-                                    {/* user info */}
-                                    <div className="text-xs">
-                                        <h2 className="font-semibold">{truncateAddress(post.user)}</h2>
-                                        <p className="flex gap-2">
-                                            <span className="opacity-50">{post.createdAt ? formatTimestamp(post.createdAt) : "-"}</span>
-                                            <span className="bg-orange-500 text-white">{server?.serverName ? `server: ${server.serverName}` : ""}</span>
-                                        </p>
-                                        <p className="mt-1">{post.caption}</p>
-                                    </div>
-                                </Link>
-
-                                {/* content */}
-                                {post?.image ? (
-                                    <div className="mt-2 flex flex-col md:flex-row">
-                                        <div className="flex justify-between flex-row md:flex-col py-3 md:px-3 gap-6 order-2 md:order-1">
-                                            <div className="flex flex-row md:flex-col gap-6">
-                                                <button
-                                                    className="cursor-pointer flex md:flex-col items-center gap-1"
-                                                    onClick={() => handlerLike(post.id)}
-                                                    aria-label={isLiked ? "Unlike" : "Like"}
-                                                    aria-pressed={isLiked}
-                                                >
-                                                    <HeartIcon filled={isLiked} size={20} />
-                                                    <p className="text-[10px]">{post.likesCount}</p>
-                                                </button>
-                                                <Link href={`/post/${post.id}`} className="cursor-pointer">
-                                                    <Image src="/icon/comment.png" alt="Comment" width={20} height={20} />
-                                                </Link>
-                                                <Link href={`/reward/123`} className="cursor-pointer">
-                                                    <Image src="/icon/reward.png" alt="Reward This Post" width={25} height={25} />
-                                                </Link>
-                                            </div>
-
-                                            <button className="cursor-pointer">
-                                                <Image src="/icon/share.png" alt="Share" width={20} height={20} />
-                                            </button>
-                                        </div>
-                                        <div className="bg-red-200 w-full h-[280px] sm:h-[375px] md:h-[300px] lg:h-[375px] md:w-[300px] lg:w-[375px] order-1 md:order-2"></div>
-                                    </div>
-                                ) : (
-                                    <div className="mt-2">
-                                        <div className="flex justify-between py-1 md:px-2 gap-6">
-                                            <div className="flex gap-6">
-                                                <button
-                                                    className="cursor-pointer flex items-center gap-1"
-                                                    onClick={() => handlerLike(post.id)}
-                                                    aria-label={isLiked ? "Unlike" : "Like"}
-                                                    aria-pressed={isLiked}
-                                                >
-                                                    <HeartIcon filled={isLiked} size={15} />
-                                                    <p className="text-[10px]">{post.likesCount}</p>
-                                                </button>
-                                                <Link href={`/post/${post.id}`} className="cursor-pointer flex items-center gap-1">
-                                                    <Image src="/icon/comment.png" alt="Comment" width={15} height={15} />
-                                                    <p className="text-[10px]">456</p>
-                                                </Link>
-                                                <Link href={`/reward/123`} className="cursor-pointer">
-                                                    <Image src="/icon/reward.png" alt="Reward This Post" width={20} height={20} />
-                                                </Link>
-                                            </div>
-
-                                            <button className="cursor-pointer">
-                                                <Image src="/icon/share.png" alt="Share" width={15} height={15} />
-                                            </button>
-                                        </div>
-                                    </div>
-                                )}
+                            <div className="mt-2 flex items-center gap-8 text-xs text-gray-700">
+                                <p className="mt-1 inline-flex items-center gap-2 bg-gray-100 rounded-full px-3 py-1 self-start max-w-full">
+                                    <svg className="w-3 h-3 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 010 5.656l-4 4a4 4 0 01-5.656-5.656l1.5-1.5M10.172 13.828a4 4 0 010-5.656l4-4a4 4 0 015.656 5.656l-1.5 1.5" />
+                                    </svg>
+                                    <span className="text-[11px] font-mono text-gray-600 truncate">
+                                        {hashAddress ? truncateAddress(hashAddress) : "Not available"}
+                                    </span>
+                                </p>
                             </div>
-                        )
-                    })}
+
+                            <div className="mt-3 flex gap-2">
+                                {isOwner ? (
+                                    <Link
+                                        href="/edit-profile"
+                                        className="flex-1 text-xs font-medium py-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-900 text-center transition-colors"
+                                    >
+                                        Edit
+                                    </Link>
+                                ) : (
+                                    <button
+                                        className="flex-1 text-xs font-medium py-2 rounded-lg bg-blue-500 hover:bg-blue-600 text-white text-center transition-colors cursor-pointer"
+                                    >
+                                        Follow
+                                    </button>
+                                )}
+                                <button
+                                    onClick={handlerShare}
+                                    className="flex-1 text-xs font-medium py-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-900 text-center transition-colors cursor-pointer"
+                                >
+                                    Share
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="mt-3 flex flex-col gap-1">
+                        {user?.bio ? (
+                            <p className="text-xs text-gray-600">{user.bio}</p>
+                        ) : (
+                            isOwner && (
+                                <Link href="/edit-profile" className="text-xs text-gray-400">
+                                    Add bio
+                                </Link>
+                            )
+                        )}
+
+                        {links.length > 0 && (
+                            <div className="flex flex-wrap gap-3">
+                                {links.map((item) => (
+                                    <Link key={item.href} href={item.href} className="text-xs text-blue-500 hover:text-blue-700">
+                                        {item.name}
+                                    </Link>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                <div className="mt-4 flex border-b border-gray-200">
+                    <button
+                        onClick={() => setActiveTab("posts")}
+                        aria-label="Posts"
+                        className={`flex-1 flex justify-center py-3 cursor-pointer border-b-2 ${activeTab === "posts" ? "border-gray-900" : "border-transparent"}`}
+                    >
+                        <GridIcon active={activeTab === "posts"} />
+                    </button>
+                    <button
+                        onClick={() => setActiveTab("reposts")}
+                        aria-label="Reposts"
+                        className={`flex-1 flex justify-center py-3 cursor-pointer border-b-2 ${activeTab === "reposts" ? "border-gray-900" : "border-transparent"}`}
+                    >
+                        <RepostIcon active={activeTab === "reposts"} />
+                    </button>
+                </div>
+
+                <div className="px-4 md:px-6">
+                    {activeTab === "posts" && (!posts || posts.length === 0) && (
+                        <div className="flex flex-col items-center text-center py-16">
+                            <div className="w-24 h-24 rounded-3xl bg-blue-50 flex items-center justify-center">
+                                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                    <rect x="3" y="5" width="18" height="14" rx="3" />
+                                    <circle cx="9" cy="11" r="2" />
+                                    <path d="M21 16l-5-5-8 8" />
+                                </svg>
+                            </div>
+                            <h3 className="mt-4 text-base font-semibold text-gray-900">
+                                {isOwner ? "Upload your photos!" : "No posts yet"}
+                            </h3>
+                            <p className="mt-1 text-xs text-gray-600 max-w-[260px]">
+                                {isOwner
+                                    ? "Express yourself through photos and start connecting with students around the world."
+                                    : "Shared posts will appear here."}
+                            </p>
+                        </div>
+                    )}
+
+                    {activeTab === "reposts" && (
+                        <div className="flex flex-col items-center text-center py-16">
+                            <h3 className="text-base font-semibold text-gray-900">No reposts yet</h3>
+                            <p className="mt-1 text-xs text-gray-600 max-w-[260px]">
+                                Reposted posts will appear here.
+                            </p>
+                        </div>
+                    )}
+
+                    {activeTab === "posts" && (
+                        <div className="mt-4 flex flex-col gap-6">
+                            {posts?.map((post) => {
+                                const server = serverDetails[post.server]
+                                const isLiked = Boolean(likedPosts[post.id])
+
+                                return (
+                                    <div key={post.id} className="border-b border-gray-200 pb-6">
+                                        <Link href={`/${post.user}`} className="flex gap-2 items-center">
+                                            <div className="bg-blue-300 rounded-4xl p-4"></div>
+
+                                            <div className="text-xs">
+                                                <h2 className="font-semibold">{truncateAddress(post.user)}</h2>
+                                                <p className="flex gap-1 md:gap-2">
+                                                    <span className="opacity-50">{post.createdAt ? formatTimestamp(post.createdAt) : "-"}</span>
+                                                    <span className="bg-orange-500 text-white">{server?.serverName ? `server: ${server.serverName}` : ""}</span>
+                                                </p>
+                                                <p className="mt-1">{post.caption}</p>
+                                            </div>
+                                        </Link>
+
+                                        {post?.image ? (
+                                            <div className="mt-2 flex flex-col md:flex-row">
+                                                <div className="flex justify-between flex-row md:flex-col py-3 md:px-3 gap-6 order-2 md:order-1">
+                                                    <div className="flex flex-row md:flex-col gap-6">
+                                                        <button
+                                                            className="cursor-pointer flex md:flex-col items-center gap-1"
+                                                            onClick={() => handlerLike(post.id)}
+                                                            aria-label={isLiked ? "Unlike" : "Like"}
+                                                            aria-pressed={isLiked}
+                                                        >
+                                                            <HeartIcon filled={isLiked} size={20} />
+                                                            <p className="text-[10px]">{post.likesCount}</p>
+                                                        </button>
+                                                        <Link href={`/post/${post.id}`} className="cursor-pointer">
+                                                            <Image src="/icon/comment.png" alt="Comment" width={20} height={20} />
+                                                        </Link>
+                                                        <Link href={`/reward/123`} className="cursor-pointer">
+                                                            <Image src="/icon/reward.png" alt="Reward This Post" width={25} height={25} />
+                                                        </Link>
+                                                    </div>
+
+                                                    <button className="cursor-pointer">
+                                                        <Image src="/icon/share.png" alt="Share" width={20} height={20} />
+                                                    </button>
+                                                </div>
+                                                <div className="bg-red-200 w-full h-[280px] sm:h-[375px] md:h-[300px] lg:h-[375px] md:w-[300px] lg:w-[375px] order-1 md:order-2"></div>
+                                            </div>
+                                        ) : (
+                                            <div className="mt-2">
+                                                <div className="flex justify-between py-1 md:px-2 gap-6">
+                                                    <div className="flex gap-6">
+                                                        <button
+                                                            className="cursor-pointer flex items-center gap-1"
+                                                            onClick={() => handlerLike(post.id)}
+                                                            aria-label={isLiked ? "Unlike" : "Like"}
+                                                            aria-pressed={isLiked}
+                                                        >
+                                                            <HeartIcon filled={isLiked} size={15} />
+                                                            <p className="text-[10px]">{post.likesCount}</p>
+                                                        </button>
+                                                        <Link href={`/post/${post.id}`} className="cursor-pointer flex items-center gap-1">
+                                                            <Image src="/icon/comment.png" alt="Comment" width={15} height={15} />
+                                                            <p className="text-[10px]">456</p>
+                                                        </Link>
+                                                        <Link href={`/reward/123`} className="cursor-pointer">
+                                                            <Image src="/icon/reward.png" alt="Reward This Post" width={20} height={20} />
+                                                        </Link>
+                                                    </div>
+
+                                                    <button className="cursor-pointer">
+                                                        <Image src="/icon/share.png" alt="Share" width={15} height={15} />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                )
+                            })}
+                        </div>
+                    )}
                 </div>
             </div>
 
