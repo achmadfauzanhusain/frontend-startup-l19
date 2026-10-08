@@ -9,7 +9,7 @@ const ConnectWallet = () => {
               <div className="bg-orange-500 w-14 h-14 rounded-full shrink-0"></div>
               <div className="text-left">
                 <h2 className="font-bold text-lg leading-tight text-gray-900">TBLO</h2>
-                <p className="text-xs text-gray-400">Hubungkan wallet kamu</p>
+                <p className="text-xs text-gray-400">Connect Your Wallet</p>
               </div>
             </div>
 
