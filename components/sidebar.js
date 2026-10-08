@@ -108,7 +108,7 @@ const Sidebar = () => {
                   key={item.label}
                   href={item.href}
                   aria-label={item.label}
-                  className="w-12 h-12 -mt-4 rounded-2xl bg-[#4272FC] hover:bg-blue-500 shadow-lg shadow-blue-500/30 flex items-center justify-center transition-colors"
+                  className="w-8 h-8 -mt-1 rounded-2xl bg-[#4272FC] hover:bg-blue-500 shadow-lg shadow-blue-500/30 flex items-center justify-center transition-colors"
                 >
                   <Image src={item.icon} alt={item.label} width={24} height={24} />
                 </Link>
