@@ -44,8 +44,6 @@ const countComments = (comments) => {
     return Array.isArray(comments) ? comments.length : Object.keys(comments).length;
 };
 
-/* ---------- Cards ---------- */
-
 const UserCard = ({ user }) => {
     const address = user.hash ?? user.id;
     const name = user.displayName || truncateAddress(address);
@@ -69,7 +67,10 @@ const UserCard = ({ user }) => {
 };
 
 const ServerCard = ({ server }) => (
-    <div className="p-4 rounded-xl border hover:bg-gray-50 transition">
+    <Link
+        href={`/server/${server.id}`}
+        className="p-4 rounded-xl border hover:bg-gray-50 transition"
+    >
         <div className="flex items-start justify-between gap-2">
             <h3 className="text-sm font-semibold truncate">{server.serverName}</h3>
             {server.category && (
@@ -90,7 +91,7 @@ const ServerCard = ({ server }) => (
             </span>
             <span>Created at {formatDate(server.createdAt)}</span>
         </div>
-    </div>
+    </Link>
 );
 
 const PostCard = ({ post }) => {
@@ -98,9 +99,9 @@ const PostCard = ({ post }) => {
     const likesCount = post.likesCount ?? 0;
 
     return (
-        <div className="border-b border-gray-300 pb-6">
+        <Link href={`/post/${post.id}`} className="border-b border-gray-300 pb-6">
             {/* header */}
-            <Link href={`/${post.user}`} className="flex gap-2 items-center">
+            <div className="flex gap-2 items-center">
                 <div className="bg-blue-300 rounded-4xl p-4"></div>
 
                 <div className="text-xs">
@@ -110,11 +111,9 @@ const PostCard = ({ post }) => {
                     <p className="opacity-50">{formatDate(post.createdAt)}</p>
                     <p className="mt-1">{post.caption}</p>
                 </div>
-            </Link>
+            </div>
 
-            {/* content */}
             {post.image ? (
-                // ADA gambar: aksi di samping (desktop) / bawah (mobile)
                 <div className="mt-2 flex flex-col md:flex-row">
                     <div className="flex justify-between flex-row md:flex-col py-3 md:px-3 gap-6 order-2 md:order-1">
                         <div className="flex flex-row md:flex-col gap-6">
@@ -146,7 +145,6 @@ const PostCard = ({ post }) => {
                     </div>
                 </div>
             ) : (
-                // TIDAK ada gambar: aksi satu baris saja
                 <div className="mt-2">
                     <div className="flex justify-between py-1 md:px-2 gap-6">
                         <div className="flex gap-6">
@@ -169,11 +167,9 @@ const PostCard = ({ post }) => {
                     </div>
                 </div>
             )}
-        </div>
+        </Link>
     );
 };
-
-/* ---------- Page ---------- */
 
 const Search = () => {
     const [query, setQuery] = useState("");
