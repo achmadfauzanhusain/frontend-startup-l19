@@ -71,3 +71,21 @@ export async function commentPost(postId, data) {
         token: true
     });
 }
+
+export async function deletePost(postId) {
+    const url = `${ROOT_API}/post/${postId}/delete`;
+    return callApi({
+        url,
+        method: "DELETE",
+        token: true
+    });
+}
+
+export async function deleteComment(commentId) {
+    const url = `${ROOT_API}/post/comment/${commentId}/delete`;
+    return callApi({
+        url,
+        method: "DELETE",
+        token: true
+    });
+}
