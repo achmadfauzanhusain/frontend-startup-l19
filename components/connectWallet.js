@@ -1,44 +1,73 @@
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 
+// Isi data partner di sini. Item dengan `name` kosong tidak akan ditampilkan.
+const PARTNERS = [
+  { name: '', link: '#', category: '' },
+  { name: '', link: '#', category: '' },
+  { name: '', link: '#', category: '' },
+];
+
 const ConnectWallet = () => {
-    return (
-      <div className="w-full md:w-1/3 hidden md:flex md:justify-center mt-4 md:mt-0">
-        <div className="mt-6 fixed text-center w-72 mr-4">
-          <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
-            <div className="flex items-center gap-3">
-              <div className="bg-orange-500 w-14 h-14 rounded-full shrink-0"></div>
-              <div className="text-left">
-                <h2 className="font-bold text-lg leading-tight text-gray-900">TBLO</h2>
-                <p className="text-xs text-gray-400">Connect Your Wallet</p>
-              </div>
-            </div>
+  const partners = PARTNERS.filter((p) => p.name);
 
-            <div className="my-3 h-px w-full bg-gray-100"></div>
-
-            <div className="flex justify-center">
-              <ConnectButton accountStatus="address" showBalance="false" />
+  return (
+    // Mobile: disembunyikan. Desktop (md ke atas): tampil sebagai kolom sidebar.
+    <aside className="hidden md:block md:w-1/3 md:max-w-xs lg:max-w-sm md:shrink-0">
+      {/* sticky (bukan fixed) agar mengikuti lebar kolom & tidak overflow */}
+      <div className="w-full space-y-4 md:sticky md:top-6">
+        <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
+          <div className="flex items-center gap-3">
+            <div className="h-12 w-12 shrink-0 rounded-full bg-orange-500 sm:h-14 sm:w-14" />
+            <div className="min-w-0 text-left">
+              <h2 className="truncate text-base font-bold leading-tight text-gray-900 sm:text-lg">
+                TBLO
+              </h2>
+              <p className="text-xs text-gray-400">Connect Your Wallet</p>
             </div>
           </div>
 
-          <div className="mt-4 rounded-2xl border border-gray-200 bg-white p-4 shadow-sm text-left">
+          <div className="my-3 h-px w-full bg-gray-100" />
+
+          <div className="flex justify-center">
+            <ConnectButton
+              accountStatus={{ smallScreen: 'avatar', largeScreen: 'address' }}
+              chainStatus={{ smallScreen: 'icon', largeScreen: 'full' }}
+              showBalance={false}
+            />
+          </div>
+        </div>
+
+        {partners.length > 0 && (
+          <div className="rounded-2xl border border-gray-200 bg-white p-4 text-left shadow-sm">
             <h3 className="text-sm font-bold text-gray-900">Our Partnership</h3>
             <ul className="mt-3 space-y-3">
-              {[{ name: '', link: '#', category: '' }, { name: '', link: '#', category: '' }, { name: '', link: '#', category: '' }].map((tag, i) => (
-                <li key={tag.name} className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-semibold text-gray-800">{tag.name}</p>
-                    <p className="text-xs text-gray-400">{tag.category}</p>
+              {partners.map((partner) => (
+                <li
+                  key={`${partner.name}-${partner.link}`}
+                  className="flex items-center justify-between gap-3"
+                >
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold text-gray-800">
+                      {partner.name}
+                    </p>
+                    <p className="truncate text-xs text-gray-400">
+                      {partner.category}
+                    </p>
                   </div>
-                  <a href={tag.link} className="text-xs text-sky-500 font-semibold">
+                  <a
+                    href={partner.link}
+                    className="shrink-0 text-xs font-semibold text-sky-500 hover:text-sky-600"
+                  >
                     See
                   </a>
                 </li>
               ))}
             </ul>
           </div>
-        </div>
+        )}
       </div>
-    )
-}
+    </aside>
+  );
+};
 
-export default ConnectWallet
+export default ConnectWallet;
